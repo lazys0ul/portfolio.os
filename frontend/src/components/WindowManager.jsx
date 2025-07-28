@@ -27,7 +27,7 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
       case 'Terminal':
         return <TerminalWindow />;
       case 'Settings':
-        return <SettingsWindow />;
+        return <SettingsWindow currentWallpaper={currentWallpaper} onChangeWallpaper={onChangeWallpaper} />;
       case 'File Manager':
         return <div className="p-4 text-white">File Manager Coming Soon...</div>;
       case 'Music Player':
