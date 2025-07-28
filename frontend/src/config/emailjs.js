@@ -8,9 +8,9 @@
 // 6. Replace the values below
 
 export const emailjsConfig = {
-  serviceID: 'service_3xxvqsg',         // Your EmailJS Service ID
-  templateID: 'template_33l4dn9',       // Your EmailJS Template ID  
-  publicKey: 'KydqMwoMdwSfGcaV4'        // Your EmailJS Public Key
+  serviceID: process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_3xxvqsg',
+  templateID: process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_33l4dn9',
+  publicKey: process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'KydqMwoMdwSfGcaV4'
 };
 
 // Example template variables you can use in your EmailJS template:
