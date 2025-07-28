@@ -219,5 +219,11 @@ export const desktopApps = [
     icon: "Settings",
     category: "system",
     description: "System preferences"
+  },
+  {
+    name: "VS Code",
+    icon: "Code2",
+    category: "development",
+    description: "Code editor with portfolio projects"
   }
 ];

@@ -7,6 +7,7 @@ import SkillsWindow from './windows/SkillsWindow';
 import ContactWindow from './windows/ContactWindow';
 import TerminalWindow from './windows/TerminalWindow';
 import SettingsWindow from './windows/SettingsWindow';
+import VSCodeWindow from './windows/VSCodeWindow';
 
 const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow, currentWallpaper, onChangeWallpaper }) => {
   const [dragging, setDragging] = useState(null);
@@ -64,6 +65,8 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         return <TerminalWindow key="terminal" />;
       case 'Settings':
         return <SettingsWindow key="settings" currentWallpaper={currentWallpaper} onChangeWallpaper={onChangeWallpaper} />;
+      case 'VS Code':
+        return <VSCodeWindow key="vscode" />;
       case 'File Manager':
         return <div key="filemanager" className="p-4 text-white">File Manager Coming Soon...</div>;
       case 'Music Player':

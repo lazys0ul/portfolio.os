@@ -1,45 +1,65 @@
 import React from 'react';
-import { ExternalLink, Github, Linkedin, Mail, FileText, Download } from 'lucide-react';
-import { personalInfo } from '../mock';
+import { ExternalLink, Github, Linkedin, Mail, FileText, Download, User, Briefcase, Building, Code, Terminal, Folder, Settings, Code2 } from 'lucide-react';
+import { personalInfo, desktopApps } from '../mock';
 
 const DesktopIcons = ({ onOpenWindow }) => {
-  const desktopShortcuts = [
-    {
-      name: 'About Pranav',
-      icon: '👤',
-      action: () => onOpenWindow('About Me'),
-      position: { top: '15%', right: '8%' }
-    },
-    {
-      name: 'Projects',
-      icon: '🚀',
-      action: () => onOpenWindow('Projects'),
-      position: { top: '30%', right: '8%' }
-    },
-    {
-      name: 'Experience',
-      icon: '💼',
-      action: () => onOpenWindow('Experience'),
-      position: { top: '45%', right: '8%' }
-    },
-    {
-      name: 'Skills',
-      icon: '⚡',
-      action: () => onOpenWindow('Skills'),
-      position: { top: '60%', right: '8%' }
-    },
-    {
-      name: 'Contact Me',
-      icon: '📧',
-      action: () => onOpenWindow('Contact'),
-      position: { top: '75%', right: '8%' }
-    },
-    {
-      name: 'Terminal',
-      icon: '💻',
-      action: () => onOpenWindow('Terminal'),
-      position: { top: '20%', left: '5%' }
-    },
+  // Icon mapping for lucide-react icons
+  const iconMap = {
+    User: User,
+    Briefcase: Briefcase,
+    Building: Building,
+    Code: Code,
+    Mail: Mail,
+    Terminal: Terminal,
+    Folder: Folder,
+    Settings: Settings,
+    Code2: Code2
+  };
+
+  // Generate desktop shortcuts from desktopApps
+  const desktopShortcuts = desktopApps.map((app, index) => {
+    const IconComponent = iconMap[app.icon];
+    return {
+      name: app.name,
+      icon: IconComponent ? <IconComponent className="w-8 h-8" /> : '📁',
+      action: () => onOpenWindow(app.name),
+      position: getAppPosition(index, app.category)
+    };
+  });
+
+  // Function to calculate app positions based on category
+  function getAppPosition(index, category) {
+    const positions = {
+      personal: [
+        { top: '15%', right: '8%' }
+      ],
+      work: [
+        { top: '30%', right: '8%' },
+        { top: '45%', right: '8%' }
+      ],
+      technical: [
+        { top: '60%', right: '8%' }
+      ],
+      communication: [
+        { top: '75%', right: '8%' }
+      ],
+      system: [
+        { top: '20%', left: '5%' },
+        { top: '35%', left: '5%' },
+        { top: '50%', left: '5%' }
+      ],
+      development: [
+        { top: '65%', left: '5%' }
+      ]
+    };
+
+    const categoryPositions = positions[category] || [{ top: '20%', left: '20%' }];
+    const positionIndex = desktopApps.filter(app => app.category === category).findIndex(app => app.name === desktopApps[index].name);
+    return categoryPositions[positionIndex] || categoryPositions[0];
+  }
+
+  // Add additional shortcuts (GitHub, LinkedIn)
+  const additionalShortcuts = [
     {
       name: 'GitHub',
       icon: <Github className="w-8 h-8" />,
@@ -53,6 +73,8 @@ const DesktopIcons = ({ onOpenWindow }) => {
       position: { bottom: '15%', right: '12%' }
     }
   ];
+
+  const allShortcuts = [...desktopShortcuts, ...additionalShortcuts];
 
   const DesktopIcon = ({ shortcut }) => (
     <button
@@ -79,7 +101,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
   return (
     <div className="absolute inset-0 pointer-events-none z-20">
       <div className="relative w-full h-full pointer-events-none">
-        {desktopShortcuts.map((shortcut, index) => (
+        {allShortcuts.map((shortcut, index) => (
           <div key={index} className="pointer-events-auto">
             <DesktopIcon shortcut={shortcut} />
           </div>
