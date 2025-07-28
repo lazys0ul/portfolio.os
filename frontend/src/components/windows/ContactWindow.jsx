@@ -111,6 +111,9 @@ const ContactWindow = () => {
                     required
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
                     placeholder="What's this about?"
+                    autoComplete="off"
+                    onFocus={(e) => e.target.focus()}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
                 
