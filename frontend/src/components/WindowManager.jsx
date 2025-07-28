@@ -74,8 +74,12 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
           size: { ...window.size }
         });
         
+        // Use browser window dimensions for maximizing
         window.position = { x: 16, y: 40 };
-        window.size = { width: window.innerWidth - 32, height: window.innerHeight - 80 };
+        window.size = { 
+          width: globalThis.window?.innerWidth - 32 || 1200, 
+          height: globalThis.window?.innerHeight - 80 || 800 
+        };
         setIsMaximized(true);
       } else {
         if (previousSize) {
@@ -107,15 +111,23 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         ref={windowRef}
         className="absolute bg-gray-900/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl overflow-hidden"
         style={{
-          left: windowState.position.x,
-          top: windowState.position.y,
-          width: windowState.size.width,
-          height: windowState.size.height,
+          left: window.position.x,
+          top: window.position.y,
+          width: window.size.width,
+          height: window.size.height,
           zIndex: window.zIndex
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onFocusWindow(window.id);
+        onMouseDown={(e) => {
+          // Only focus window if clicking on non-interactive elements
+          const target = e.target;
+          const isInteractive = target.tagName === 'INPUT' || 
+                               target.tagName === 'TEXTAREA' || 
+                               target.tagName === 'BUTTON' ||
+                               target.closest('input, textarea, button, [contenteditable]');
+          
+          if (!isInteractive) {
+            onFocusWindow(window.id);
+          }
         }}
       >
         {/* Window Header */}
@@ -165,7 +177,20 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         </div>
 
         {/* Window Content */}
-        <div className="h-full pb-8 overflow-y-auto" style={{ height: 'calc(100% - 40px)' }}>
+        <div 
+          className="h-full pb-8 overflow-y-auto" 
+          style={{ height: 'calc(100% - 40px)' }}
+          onClick={(e) => {
+            // Don't interfere with input interactions
+            const isInteractive = e.target.tagName === 'INPUT' || 
+                                 e.target.tagName === 'TEXTAREA' || 
+                                 e.target.tagName === 'BUTTON' ||
+                                 e.target.closest('input, textarea, button, [contenteditable]');
+            if (!isInteractive) {
+              onFocusWindow(window.id);
+            }
+          }}
+        >
           {getWindowComponent(window.id, window.data)}
         </div>
 

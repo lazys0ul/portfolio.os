@@ -191,7 +191,17 @@ const TerminalWindow = () => {
   };
 
   return (
-    <div className="h-full bg-black text-green-400 font-mono overflow-hidden flex flex-col">
+    <div 
+      className="h-full bg-black text-green-400 font-mono overflow-hidden flex flex-col"
+      onClick={(e) => {
+        // Only focus input if not clicking on interactive elements
+        if (inputRef.current && 
+            !e.target.matches('input, textarea, button, [contenteditable]') &&
+            !e.target.closest('input, textarea, button, [contenteditable]')) {
+          setTimeout(() => inputRef.current.focus(), 0);
+        }
+      }}
+    >
       {/* Terminal Header */}
       <div className="flex items-center space-x-2 bg-gray-900 px-4 py-2 border-b border-gray-700">
         <Terminal className="w-4 h-4" />
@@ -238,10 +248,19 @@ const TerminalWindow = () => {
             spellCheck={false}
             autoComplete="off"
             autoFocus
-            onFocus={(e) => e.target.focus()}
+            onBlur={(e) => {
+              // Prevent losing focus unless clicking on another input element
+              setTimeout(() => {
+                if (inputRef.current && 
+                    document.activeElement !== inputRef.current &&
+                    !document.activeElement.matches('input, textarea, button, [contenteditable]')) {
+                  inputRef.current.focus();
+                }
+              }, 10);
+            }}
             onClick={(e) => {
               e.stopPropagation();
-              inputRef.current?.focus();
+              e.target.focus();
             }}
           />
         </form>
