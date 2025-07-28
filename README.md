@@ -52,13 +52,24 @@ portfolio.os/
 - Python 3.8+
 - npm or yarn
 
-### Frontend Setup
+### Quick Start (After Initial Setup)
+```bash
+# Frontend (Terminal 1)
+cd frontend && npm start
+
+# Backend (Terminal 2) 
+cd backend && python server.py
+```
+
+### First Time Setup
+
+#### Frontend Setup
 1. Navigate to the frontend directory:
    ```bash
    cd frontend
    ```
 
-2. Install dependencies:
+2. Install dependencies (one-time only):
    ```bash
    npm install
    ```
@@ -70,23 +81,28 @@ portfolio.os/
 
 The frontend will be available at `http://localhost:3000`
 
-### Backend Setup
+#### Backend Setup  
 1. Navigate to the backend directory:
    ```bash
    cd backend
    ```
 
-2. Install dependencies:
+2. Install dependencies (one-time only):
    ```bash
    pip install -r requirements.txt
    ```
 
 3. Start the server:
    ```bash
-   uvicorn server:app --reload --port 8000
+   python server.py
    ```
 
-The backend API will be available at `http://localhost:8000`
+The backend API will be available at `http://localhost:8001`
+
+### Convenience Scripts
+Use the provided batch files for quick startup:
+- **Windows**: Double-click `start-frontend.bat`
+- **Unix/Mac**: Run `./start-frontend.sh`
 
 ## 🎯 Available Commands (Terminal Window)
 

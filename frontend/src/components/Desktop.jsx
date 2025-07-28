@@ -186,7 +186,15 @@ const Desktop = () => {
         onFocusWindow={(windowId) => {
           setOpenWindows(prev => {
             const maxZ = Math.max(...prev.map(w => w.zIndex));
-            return prev.map(w => w.id === windowId ? { ...w, zIndex: maxZ + 1 } : w);
+            const windowIndex = prev.findIndex(w => w.id === windowId);
+            if (windowIndex === -1) return prev;
+            
+            // Only update if the window isn't already at the top
+            if (prev[windowIndex].zIndex === maxZ) return prev;
+            
+            const newWindows = [...prev];
+            newWindows[windowIndex] = { ...newWindows[windowIndex], zIndex: maxZ + 1 };
+            return newWindows;
           });
         }}
         currentWallpaper={currentWallpaper}

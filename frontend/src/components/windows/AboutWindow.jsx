@@ -2,9 +2,9 @@ import React from 'react';
 import { User, MapPin, GraduationCap, Heart, Target, Calendar } from 'lucide-react';
 import { personalInfo, education } from '../../mock';
 
-const AboutWindow = () => {
+const AboutWindow = React.memo(() => {
   return (
-    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white overflow-auto">
+    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white">
       <div className="p-8">
         {/* Header Section */}
         <div className="flex items-start space-x-6 mb-8">
@@ -110,6 +110,6 @@ const AboutWindow = () => {
       </div>
     </div>
   );
-};
+});
 
 export default AboutWindow;

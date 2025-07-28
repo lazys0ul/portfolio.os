@@ -9,6 +9,9 @@ body {
         "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent visual glitches during scrolling */
+    overflow: hidden;
+    backface-visibility: hidden;
 }
 
 code {
@@ -33,4 +36,84 @@ code {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smart scroll optimization - only active during scroll */
+.scroll-container.scrolling {
+  pointer-events: none;
+}
+
+.scroll-container.scrolling * {
+  transition: none !important;
+  animation-play-state: paused !important;
+}
+
+/* Targeted scroll optimization - only for scroll containers */
+.scroll-container {
+  /* Essential GPU acceleration */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: scroll-position;
+  
+  /* Anti-flashing essentials */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  overscroll-behavior: contain;
+  
+  /* Performance containment */
+  contain: layout style;
+}
+
+/* Custom scrollbar styling */
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  border: none;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Terminal scroll optimization */
+.scroll-container-terminal {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: scroll-position;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Legacy window-content class */
+.window-content {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: scroll-position;
+}
+
+.window-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.window-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.window-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.window-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
 }

@@ -141,7 +141,7 @@ const ProjectsWindow = () => {
   );
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white overflow-auto">
+    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white">
       <div className="p-8">
         <div className="flex items-center justify-between mb-8">
           <div>

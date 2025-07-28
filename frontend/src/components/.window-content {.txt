@@ -1,0 +1,11 @@
+.window-content {
+  /* Multiple hardware acceleration layers */
+  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  isolation: isolate;
+  contain: layout style paint;
+  overscroll-behavior: contain;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}

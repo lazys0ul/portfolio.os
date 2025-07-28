@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, ChevronRight } from 'lucide-react';
 import { personalInfo, projects, experience, techStack } from '../../mock';
 
-const TerminalWindow = () => {
+const TerminalWindow = React.memo(() => {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
     'Welcome to Pranav\'s Interactive Terminal',
@@ -194,11 +194,9 @@ const TerminalWindow = () => {
     <div 
       className="h-full bg-black text-green-400 font-mono overflow-hidden flex flex-col"
       onClick={(e) => {
-        // Only focus input if not clicking on interactive elements
-        if (inputRef.current && 
-            !e.target.matches('input, textarea, button, [contenteditable]') &&
-            !e.target.closest('input, textarea, button, [contenteditable]')) {
-          setTimeout(() => inputRef.current.focus(), 0);
+        // Simplified focus handling
+        if (inputRef.current && e.target !== inputRef.current) {
+          inputRef.current.focus();
         }
       }}
     >
@@ -209,7 +207,7 @@ const TerminalWindow = () => {
       </div>
 
       {/* Terminal Content */}
-      <div className="flex-1 p-4 overflow-auto">
+      <div className="flex-1 p-4 overflow-auto scroll-container-terminal">
         <div className="space-y-1">
           {history.map((line, index) => (
             <div key={index} className="whitespace-pre-wrap">
@@ -248,25 +246,11 @@ const TerminalWindow = () => {
             spellCheck={false}
             autoComplete="off"
             autoFocus
-            onBlur={(e) => {
-              // Prevent losing focus unless clicking on another input element
-              setTimeout(() => {
-                if (inputRef.current && 
-                    document.activeElement !== inputRef.current &&
-                    !document.activeElement.matches('input, textarea, button, [contenteditable]')) {
-                  inputRef.current.focus();
-                }
-              }, 10);
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.target.focus();
-            }}
           />
         </form>
       </div>
     </div>
   );
-};
+});
 
 export default TerminalWindow;

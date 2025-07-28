@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Settings, Monitor, Volume2, Wifi, Battery, Smartphone, Info, Image, Palette, HardDrive, Cpu, MemoryStick } from 'lucide-react';
 import { systemInfo, wallpapers } from '../../mock';
 
-const SettingsWindow = ({ currentWallpaper, onChangeWallpaper }) => {
+const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
   const [activeTab, setActiveTab] = useState('system');
 
   const tabs = [
@@ -326,7 +326,7 @@ const SettingsWindow = ({ currentWallpaper, onChangeWallpaper }) => {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white overflow-auto">
+    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white">
       <div className="p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -365,6 +365,6 @@ const SettingsWindow = ({ currentWallpaper, onChangeWallpaper }) => {
       </div>
     </div>
   );
-};
+});
 
 export default SettingsWindow;

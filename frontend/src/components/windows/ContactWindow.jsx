@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Linkedin, Github, MapPin, Phone, Send, User, MessageSquare } from 'lucide-react';
 import { personalInfo } from '../../mock';
 
-const ContactWindow = () => {
+const ContactWindow = React.memo(() => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,7 +49,7 @@ const ContactWindow = () => {
   ];
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white overflow-auto">
+    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white">
       <div className="p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -239,6 +239,6 @@ const ContactWindow = () => {
       </div>
     </div>
   );
-};
+});
 
 export default ContactWindow;
