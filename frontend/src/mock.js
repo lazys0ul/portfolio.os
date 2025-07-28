@@ -22,7 +22,7 @@ export const personalInfo = {
   ],
   passions: [
     "Crypto finance research",
-    "Case-study strategy (180DC)",
+    "Case-study strategy",
     "Music production",
     "Fine arts",
     "Technical writing"
