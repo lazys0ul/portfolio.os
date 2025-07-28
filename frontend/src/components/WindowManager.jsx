@@ -1,0 +1,202 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { X, Minus, Square, Maximize2, Minimize2 } from 'lucide-react';
+import AboutWindow from './windows/AboutWindow';
+import ProjectsWindow from './windows/ProjectsWindow';
+import ExperienceWindow from './windows/ExperienceWindow';
+import SkillsWindow from './windows/SkillsWindow';
+import ContactWindow from './windows/ContactWindow';
+import TerminalWindow from './windows/TerminalWindow';
+import SettingsWindow from './windows/SettingsWindow';
+
+const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow }) => {
+  const [dragging, setDragging] = useState(null);
+  const [resizing, setResizing] = useState(null);
+
+  const getWindowComponent = (windowType, data) => {
+    switch (windowType) {
+      case 'About Me':
+        return <AboutWindow />;
+      case 'Projects':
+        return <ProjectsWindow />;
+      case 'Experience':
+        return <ExperienceWindow />;
+      case 'Skills':
+        return <SkillsWindow />;
+      case 'Contact':
+        return <ContactWindow />;
+      case 'Terminal':
+        return <TerminalWindow />;
+      case 'Settings':
+        return <SettingsWindow />;
+      case 'File Manager':
+        return <div className="p-4 text-white">File Manager Coming Soon...</div>;
+      case 'Music Player':
+        return <div className="p-4 text-white">Music Player Coming Soon...</div>;
+      default:
+        return <div className="p-4 text-white">Application: {windowType}</div>;
+    }
+  };
+
+  const Window = ({ window }) => {
+    const windowRef = useRef(null);
+    const [isMaximized, setIsMaximized] = useState(false);
+    const [previousSize, setPreviousSize] = useState(null);
+
+    const handleMouseDown = (e, action) => {
+      e.preventDefault();
+      onFocusWindow(window.id);
+
+      if (action === 'drag') {
+        setDragging({
+          windowId: window.id,
+          offsetX: e.clientX - window.position.x,
+          offsetY: e.clientY - window.position.y
+        });
+      } else if (action === 'resize') {
+        setResizing({
+          windowId: window.id,
+          startX: e.clientX,
+          startY: e.clientY,
+          startWidth: window.size.width,
+          startHeight: window.size.height
+        });
+      }
+    };
+
+    const handleMaximize = () => {
+      if (!isMaximized) {
+        setPreviousSize({
+          position: window.position,
+          size: window.size
+        });
+        // Maximize to full screen minus taskbar
+        window.position = { x: 16, y: 40 };
+        window.size = { width: window.innerWidth - 32, height: window.innerHeight - 80 };
+        setIsMaximized(true);
+      } else {
+        if (previousSize) {
+          window.position = previousSize.position;
+          window.size = previousSize.size;
+        }
+        setIsMaximized(false);
+      }
+    };
+
+    if (window.isMinimized) {
+      return null;
+    }
+
+    return (
+      <div
+        ref={windowRef}
+        className="absolute bg-gray-900/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl overflow-hidden"
+        style={{
+          left: window.position.x,
+          top: window.position.y,
+          width: window.size.width,
+          height: window.size.height,
+          zIndex: window.zIndex
+        }}
+        onClick={() => onFocusWindow(window.id)}
+      >
+        {/* Window Header */}
+        <div 
+          className="flex items-center justify-between px-4 py-2 bg-black/80 border-b border-white/10 cursor-move select-none"
+          onMouseDown={(e) => handleMouseDown(e, 'drag')}
+        >
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          </div>
+          
+          <h3 className="text-white font-medium text-sm flex-1 text-center">
+            {window.title}
+          </h3>
+          
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => onMinimizeWindow(window.id)}
+              className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+            >
+              <Minus className="w-3 h-3 text-white" />
+            </button>
+            <button
+              onClick={handleMaximize}
+              className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+            >
+              {isMaximized ? <Minimize2 className="w-3 h-3 text-white" /> : <Maximize2 className="w-3 h-3 text-white" />}
+            </button>
+            <button
+              onClick={() => onCloseWindow(window.id)}
+              className="w-6 h-6 bg-red-500/80 hover:bg-red-500 rounded flex items-center justify-center transition-colors"
+            >
+              <X className="w-3 h-3 text-white" />
+            </button>
+          </div>
+        </div>
+
+        {/* Window Content */}
+        <div className="h-full pb-8 overflow-auto">
+          {getWindowComponent(window.id, window.data)}
+        </div>
+
+        {/* Resize Handle */}
+        <div 
+          className="absolute bottom-0 right-0 w-4 h-4 bg-white/10 cursor-se-resize"
+          onMouseDown={(e) => handleMouseDown(e, 'resize')}
+        >
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-white/40"></div>
+        </div>
+      </div>
+    );
+  };
+
+  // Handle mouse move for dragging and resizing
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (dragging) {
+        const window = windows.find(w => w.id === dragging.windowId);
+        if (window) {
+          window.position.x = e.clientX - dragging.offsetX;
+          window.position.y = e.clientY - dragging.offsetY;
+        }
+      } else if (resizing) {
+        const window = windows.find(w => w.id === resizing.windowId);
+        if (window) {
+          const newWidth = Math.max(300, resizing.startWidth + (e.clientX - resizing.startX));
+          const newHeight = Math.max(200, resizing.startHeight + (e.clientY - resizing.startY));
+          window.size.width = newWidth;
+          window.size.height = newHeight;
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setDragging(null);
+      setResizing(null);
+    };
+
+    if (dragging || resizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging, resizing, windows]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none z-30">
+      {windows.map((window) => (
+        <div key={window.id} className="pointer-events-auto">
+          <Window window={window} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default WindowManager;
