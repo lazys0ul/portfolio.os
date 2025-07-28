@@ -121,13 +121,16 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         ref={windowRef}
         className="absolute bg-gray-900/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl overflow-hidden"
         style={{
-          left: window.position.x,
-          top: window.position.y,
-          width: window.size.width,
-          height: window.size.height,
+          left: windowState.position.x,
+          top: windowState.position.y,
+          width: windowState.size.width,
+          height: windowState.size.height,
           zIndex: window.zIndex
         }}
-        onClick={() => onFocusWindow(window.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onFocusWindow(window.id);
+        }}
       >
         {/* Window Header */}
         <div 
@@ -135,18 +138,27 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
           onMouseDown={(e) => handleMouseDown(e, 'drag')}
         >
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <button 
+              onClick={handleClose}
+              className="w-3 h-3 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
+            />
+            <button 
+              onClick={handleMinimize}
+              className="w-3 h-3 bg-yellow-500 hover:bg-yellow-600 rounded-full transition-colors"
+            />
+            <button 
+              onClick={handleMaximize}
+              className="w-3 h-3 bg-green-500 hover:bg-green-600 rounded-full transition-colors"
+            />
           </div>
           
-          <h3 className="text-white font-medium text-sm flex-1 text-center">
+          <h3 className="text-white font-medium text-sm flex-1 text-center pointer-events-none">
             {window.title}
           </h3>
           
           <div className="flex items-center space-x-1">
             <button
-              onClick={() => onMinimizeWindow(window.id)}
+              onClick={handleMinimize}
               className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
             >
               <Minus className="w-3 h-3 text-white" />
@@ -158,7 +170,7 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
               {isMaximized ? <Minimize2 className="w-3 h-3 text-white" /> : <Maximize2 className="w-3 h-3 text-white" />}
             </button>
             <button
-              onClick={() => onCloseWindow(window.id)}
+              onClick={handleClose}
               className="w-6 h-6 bg-red-500/80 hover:bg-red-500 rounded flex items-center justify-center transition-colors"
             >
               <X className="w-3 h-3 text-white" />
@@ -167,7 +179,7 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         </div>
 
         {/* Window Content */}
-        <div className="h-full pb-8 overflow-auto">
+        <div className="h-full pb-8 overflow-y-auto" style={{ height: 'calc(100% - 40px)' }}>
           {getWindowComponent(window.id, window.data)}
         </div>
 
