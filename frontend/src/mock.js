@@ -138,6 +138,39 @@ export const systemInfo = {
   graphics: "Mali-G57 MC2"
 };
 
+export const wallpapers = [
+  {
+    name: "Space Nebula",
+    url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072",
+    theme: "dark",
+    accent: "blue"
+  },
+  {
+    name: "Aurora",
+    url: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070",
+    theme: "dark", 
+    accent: "green"
+  },
+  {
+    name: "Mountains",
+    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070",
+    theme: "light",
+    accent: "orange"
+  },
+  {
+    name: "Ocean",
+    url: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?q=80&w=2069",
+    theme: "light",
+    accent: "cyan"
+  },
+  {
+    name: "Galaxy",
+    url: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?q=80&w=2072",
+    theme: "dark",
+    accent: "purple"
+  }
+];
+
 export const desktopApps = [
   {
     name: "About Me",
