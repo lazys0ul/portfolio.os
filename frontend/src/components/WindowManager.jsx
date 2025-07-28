@@ -8,7 +8,7 @@ import ContactWindow from './windows/ContactWindow';
 import TerminalWindow from './windows/TerminalWindow';
 import SettingsWindow from './windows/SettingsWindow';
 
-const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow }) => {
+const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow, currentWallpaper, onChangeWallpaper }) => {
   const [dragging, setDragging] = useState(null);
   const [resizing, setResizing] = useState(null);
 
