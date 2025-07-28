@@ -222,8 +222,14 @@ export const desktopApps = [
   },
   {
     name: "VS Code",
-    icon: "Code2",
+    icon: "FileCode",
     category: "development",
     description: "Code editor with portfolio projects"
+  },
+  {
+    name: "Spotify",
+    icon: "Music",
+    category: "entertainment",
+    description: "Music streaming and playlists"
   }
 ];

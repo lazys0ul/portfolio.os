@@ -16,7 +16,10 @@ const TaskBar = ({
   onToggleMute, 
   onToggleTheme, 
   onShutdown,
-  onOpenWindow 
+  onOpenWindow,
+  openWindows = [],
+  onRestoreWindow,
+  onFocusWindow
 }) => {
   const [showSystemPanel, setShowSystemPanel] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
@@ -46,6 +49,35 @@ const TaskBar = ({
             <div className="text-white/70 text-sm font-mono">
               Garuda Linux
             </div>
+
+            {/* Window Buttons */}
+            {openWindows.length > 0 && (
+              <div className="flex items-center space-x-1 ml-4">
+                {openWindows.map((window) => (
+                  <button
+                    key={window.id}
+                    onClick={() => {
+                      if (window.isMinimized) {
+                        onRestoreWindow(window.id);
+                      } else {
+                        // Focus the window if it's already open
+                        onFocusWindow && onFocusWindow(window.id);
+                      }
+                    }}
+                    className={`
+                      px-2 py-1 text-xs rounded transition-colors
+                      ${window.isMinimized 
+                        ? 'bg-white/10 text-white/70 hover:bg-white/20' 
+                        : 'bg-blue-500/70 text-white hover:bg-blue-500'
+                      }
+                    `}
+                    title={window.isMinimized ? `Restore ${window.title}` : window.title}
+                  >
+                    {window.title}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Center Section - Time */}

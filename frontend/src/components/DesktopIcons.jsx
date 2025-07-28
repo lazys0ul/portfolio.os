@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Github, Linkedin, Mail, FileText, Download, User, Briefcase, Building, Code, Terminal, Folder, Settings, Code2 } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, Mail, FileText, Download, User, Briefcase, Building, Code, Terminal, Folder, Settings, FileCode, Music } from 'lucide-react';
 import { personalInfo, desktopApps } from '../mock';
 
 const DesktopIcons = ({ onOpenWindow }) => {
@@ -13,7 +13,8 @@ const DesktopIcons = ({ onOpenWindow }) => {
     Terminal: Terminal,
     Folder: Folder,
     Settings: Settings,
-    Code2: Code2
+    FileCode: FileCode,
+    Music: Music
   };
 
   // Generate desktop shortcuts from desktopApps
@@ -50,6 +51,9 @@ const DesktopIcons = ({ onOpenWindow }) => {
       ],
       development: [
         { top: '65%', left: '5%' }
+      ],
+      entertainment: [
+        { top: '80%', left: '5%' }
       ]
     };
 
