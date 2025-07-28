@@ -234,11 +234,16 @@ const TerminalWindow = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-yellow-300 outline-none caret-green-400 ml-1"
+            className="flex-1 bg-transparent text-yellow-300 outline-none caret-green-400 ml-1 border-none"
             spellCheck={false}
+            autoComplete="off"
             autoFocus
+            onFocus={(e) => e.target.focus()}
+            onClick={(e) => {
+              e.stopPropagation();
+              inputRef.current?.focus();
+            }}
           />
-          <div className="w-2 h-5 bg-green-400 animate-pulse"></div>
         </form>
       </div>
     </div>
