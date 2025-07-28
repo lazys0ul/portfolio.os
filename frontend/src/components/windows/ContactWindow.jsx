@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Linkedin, Github, MapPin, Phone, Send, User, MessageSquare } from 'lucide-react';
 import { personalInfo } from '../../mock';
+import emailjs from 'emailjs-com';
+import { emailjsConfig } from '../../config/emailjs';
 
 const ContactWindow = React.memo(() => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,7 @@ const ContactWindow = React.memo(() => {
     subject: '',
     message: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -17,11 +20,33 @@ const ContactWindow = React.memo(() => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In real app, this would send email or save to database
-    alert('Message sent! I\'ll get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setIsLoading(true);
+
+    // Use EmailJS configuration
+    const { serviceID, templateID, publicKey } = emailjsConfig;
+
+    // Template parameters for EmailJS
+    const templateParams = {
+      from_name: formData.name,
+      from_email: formData.email,
+      subject: formData.subject,
+      message: formData.message,
+      to_email: 'pranavpriyadarshi903@gmail.com'
+    };
+
+    try {
+      const result = await emailjs.send(serviceID, templateID, templateParams, publicKey);
+      console.log('Email sent successfully:', result);
+      alert('✅ Message sent successfully! I\'ll get back to you soon.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      alert('❌ Failed to send message. Please try again or contact me directly.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const socialLinks = [
@@ -135,10 +160,15 @@ const ContactWindow = React.memo(() => {
                 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-lg transition-all duration-300 font-medium"
+                  disabled={isLoading}
+                  className={`w-full flex items-center justify-center space-x-2 px-6 py-3 rounded-lg transition-all duration-300 font-medium ${
+                    isLoading 
+                      ? 'bg-gray-500 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'
+                  } text-white`}
                 >
                   <Send className="w-4 h-4" />
-                  <span>Send Message</span>
+                  <span>{isLoading ? 'Sending...' : 'Send Message'}</span>
                 </button>
               </form>
             </div>
