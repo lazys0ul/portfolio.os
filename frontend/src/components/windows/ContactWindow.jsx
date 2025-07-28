@@ -127,6 +127,9 @@ const ContactWindow = () => {
                     rows="5"
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
                     placeholder="Tell me more about your project or opportunity..."
+                    autoComplete="off"
+                    onFocus={(e) => e.target.focus()}
+                    onClick={(e) => e.stopPropagation()}
                   ></textarea>
                 </div>
                 
