@@ -198,18 +198,30 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (dragging) {
-        const window = windows.find(w => w.id === dragging.windowId);
-        if (window) {
-          window.position.x = e.clientX - dragging.offsetX;
-          window.position.y = e.clientY - dragging.offsetY;
+        const targetWindow = windows.find(w => w.id === dragging.windowId);
+        if (targetWindow) {
+          targetWindow.position.x = Math.max(0, e.clientX - dragging.offsetX);
+          targetWindow.position.y = Math.max(40, e.clientY - dragging.offsetY);
+          // Trigger re-render
+          const newWindows = [...windows];
+          const index = newWindows.findIndex(w => w.id === targetWindow.id);
+          if (index !== -1) {
+            newWindows[index] = { ...targetWindow };
+          }
         }
       } else if (resizing) {
-        const window = windows.find(w => w.id === resizing.windowId);
-        if (window) {
+        const targetWindow = windows.find(w => w.id === resizing.windowId);
+        if (targetWindow) {
           const newWidth = Math.max(300, resizing.startWidth + (e.clientX - resizing.startX));
           const newHeight = Math.max(200, resizing.startHeight + (e.clientY - resizing.startY));
-          window.size.width = newWidth;
-          window.size.height = newHeight;
+          targetWindow.size.width = newWidth;
+          targetWindow.size.height = newHeight;
+          // Trigger re-render
+          const newWindows = [...windows];
+          const index = newWindows.findIndex(w => w.id === targetWindow.id);
+          if (index !== -1) {
+            newWindows[index] = { ...targetWindow };
+          }
         }
       }
     };
