@@ -6,7 +6,7 @@ import DesktopIcons from './DesktopIcons';
 import WindowManager from './WindowManager';
 import LoadingScreen from './LoadingScreen';
 import ShutdownScreen from './ShutdownScreen';
-import { personalInfo } from '../mock';
+import { personalInfo, wallpapers } from '../mock';
 
 const Desktop = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -16,7 +16,9 @@ const Desktop = () => {
   const [volume, setVolume] = useState(75);
   const [isMuted, setIsMuted] = useState(false);
   const [brightness, setBrightness] = useState(80);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentWallpaper, setCurrentWallpaper] = useState(wallpapers[0]);
+  const [currentTheme, setCurrentTheme] = useState('dark');
 
   // Time update effect
   useEffect(() => {
@@ -33,6 +35,13 @@ const Desktop = () => {
     }, 4000);
     return () => clearTimeout(loadingTimer);
   }, []);
+
+  // Handle wallpaper change
+  const changeWallpaper = (wallpaper) => {
+    setCurrentWallpaper(wallpaper);
+    setCurrentTheme(wallpaper.theme);
+    setIsDarkMode(wallpaper.theme === 'dark');
+  };
 
   // Handle window opening
   const openWindow = (appName, appData) => {
@@ -86,8 +95,10 @@ const Desktop = () => {
 
   // Handle theme toggle
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.body.classList.toggle('dark');
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    setCurrentTheme(newDarkMode ? 'dark' : 'light');
+    document.body.classList.toggle('dark', newDarkMode);
   };
 
   if (isLoading) {
@@ -109,18 +120,34 @@ const Desktop = () => {
     });
   };
 
+  const getAccentColor = () => {
+    switch(currentWallpaper.accent) {
+      case 'blue': return 'from-blue-500 to-cyan-500';
+      case 'green': return 'from-green-500 to-emerald-500';
+      case 'orange': return 'from-orange-500 to-red-500';
+      case 'cyan': return 'from-cyan-500 to-blue-500';
+      case 'purple': return 'from-purple-500 to-pink-500';
+      default: return 'from-blue-500 to-purple-500';
+    }
+  };
+
   return (
-    <div className={`relative w-full h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`relative w-full h-screen overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
       {/* Desktop Wallpaper */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-slate-800">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072')] bg-cover bg-center opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+      <div className="absolute inset-0">
+        <div 
+          className="w-full h-full bg-cover bg-center transition-all duration-1000"
+          style={{
+            backgroundImage: `url('${currentWallpaper.url}')`,
+          }}
+        />
+        <div className={`absolute inset-0 ${isDarkMode ? 'bg-black/30' : 'bg-white/20'}`}></div>
       </div>
 
-      {/* Grid overlay for Garuda OS feel */}
+      {/* Grid overlay for desktop feel */}
       <div className="absolute inset-0 opacity-5">
         <div className="w-full h-full" style={{
-          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
           backgroundSize: '50px 50px'
         }}></div>
       </div>
@@ -138,13 +165,14 @@ const Desktop = () => {
         onToggleTheme={toggleTheme}
         onShutdown={handleShutdown}
         onOpenWindow={openWindow}
+        currentTheme={currentTheme}
       />
 
       {/* Left Sidebar */}
-      <Sidebar onOpenWindow={openWindow} />
+      <Sidebar onOpenWindow={openWindow} currentTheme={currentTheme} />
 
       {/* Desktop Icons */}
-      <DesktopIcons onOpenWindow={openWindow} />
+      <DesktopIcons onOpenWindow={openWindow} currentTheme={currentTheme} />
 
       {/* Window Manager */}
       <WindowManager
@@ -161,12 +189,15 @@ const Desktop = () => {
             return prev.map(w => w.id === windowId ? { ...w, zIndex: maxZ + 1 } : w);
           });
         }}
+        currentWallpaper={currentWallpaper}
+        onChangeWallpaper={changeWallpaper}
       />
 
       {/* System Info Overlay */}
-      <div className="absolute bottom-4 right-4 text-xs text-white/70 bg-black/20 backdrop-blur-sm rounded-lg p-3">
+      <div className={`absolute bottom-4 right-4 text-xs ${isDarkMode ? 'text-white/70' : 'text-black/70'} bg-black/20 backdrop-blur-sm rounded-lg p-3`}>
         <div>Garuda Linux • KDE Plasma</div>
         <div>POCO M4 5G • {personalInfo.username}</div>
+        <div className="text-xs opacity-70">{currentWallpaper.name} theme</div>
       </div>
     </div>
   );
