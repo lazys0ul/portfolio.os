@@ -41,46 +41,76 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
     const windowRef = useRef(null);
     const [isMaximized, setIsMaximized] = useState(false);
     const [previousSize, setPreviousSize] = useState(null);
+    const [windowState, setWindowState] = useState(window);
 
     const handleMouseDown = (e, action) => {
       e.preventDefault();
+      e.stopPropagation();
       onFocusWindow(window.id);
 
       if (action === 'drag') {
         setDragging({
           windowId: window.id,
-          offsetX: e.clientX - window.position.x,
-          offsetY: e.clientY - window.position.y
+          offsetX: e.clientX - windowState.position.x,
+          offsetY: e.clientY - windowState.position.y
         });
       } else if (action === 'resize') {
         setResizing({
           windowId: window.id,
           startX: e.clientX,
           startY: e.clientY,
-          startWidth: window.size.width,
-          startHeight: window.size.height
+          startWidth: windowState.size.width,
+          startHeight: windowState.size.height
         });
       }
     };
 
-    const handleMaximize = () => {
+    const handleMaximize = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
       if (!isMaximized) {
         setPreviousSize({
-          position: window.position,
-          size: window.size
+          position: { ...windowState.position },
+          size: { ...windowState.size }
         });
-        // Maximize to full screen minus taskbar
-        window.position = { x: 16, y: 40 };
-        window.size = { width: window.innerWidth - 32, height: window.innerHeight - 80 };
+        
+        const newWindowState = {
+          ...windowState,
+          position: { x: 16, y: 40 },
+          size: { width: window.innerWidth - 32, height: window.innerHeight - 80 }
+        };
+        setWindowState(newWindowState);
         setIsMaximized(true);
       } else {
         if (previousSize) {
-          window.position = previousSize.position;
-          window.size = previousSize.size;
+          const newWindowState = {
+            ...windowState,
+            position: previousSize.position,
+            size: previousSize.size
+          };
+          setWindowState(newWindowState);
         }
         setIsMaximized(false);
       }
     };
+
+    const handleMinimize = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onMinimizeWindow(window.id);
+    };
+
+    const handleClose = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onCloseWindow(window.id);
+    };
+
+    // Update window state when props change
+    React.useEffect(() => {
+      setWindowState(window);
+    }, [window]);
 
     if (window.isMinimized) {
       return null;
