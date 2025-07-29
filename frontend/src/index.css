@@ -28,7 +28,7 @@ code {
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
-}
+} /* Add missing closing brace */
 
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out forwards;
@@ -116,4 +116,122 @@ code {
 
 .window-content::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve iOS Safari experience */
+@supports (-webkit-touch-callout: none) {
+  .fixed {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, textarea, select {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* WindowHeader Component Styles */
+.window-header {
+  @apply flex items-center justify-between p-4 bg-gray-800 rounded-t-lg border-b border-gray-700;
+}
+
+.window-header-title {
+  @apply text-white font-medium truncate flex-1 text-sm;
+}
+
+.window-header-buttons {
+  @apply flex space-x-2 ml-4;
+}
+
+.window-header-button {
+  @apply w-8 h-8 rounded-full flex items-center justify-center transition-colors;
+}
+
+.window-header-button-minimize {
+  @apply bg-yellow-500 hover:bg-yellow-600;
+}
+
+.window-header-button-close {
+  @apply bg-red-500 hover:bg-red-600;
+}
+
+/* Desktop specific styles for WindowHeader */
+@media (min-width: 768px) {
+  .window-header {
+    @apply p-2;
+  }
+
+  .window-header-title {
+    @apply text-white font-medium truncate flex-1;
+  }
+
+  .window-header-buttons {
+    @apply flex space-x-1;
+  }
+
+  .window-header-button {
+    @apply w-6 h-6;
+  }
+
+  .window-header-button-minimize {
+    @apply bg-yellow-500 hover:bg-yellow-600;
+  }
+
+  .window-header-button-maximize {
+    @apply bg-green-500 hover:bg-green-600;
+  }
+
+  .window-header-button-close {
+    @apply bg-red-500 hover:bg-red-600;
+  }
+}
+
+/* Desktop Component Styles */
+.desktop {
+  @apply relative w-full min-h-screen bg-cover bg-center bg-no-repeat;
+}
+
+.desktop-backdrop {
+  @apply absolute inset-0 bg-black/20 backdrop-blur-[1px];
+}
+
+.desktop-taskbar {
+  @apply relative z-50;
+}
+
+.desktop-icons {
+  @apply space-y-4 p-4 pb-20 pt-20;
+}
+
+.desktop-window {
+  @apply bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700 overflow-hidden;
+}
+
+/* Mobile specific styles for Desktop component */
+@media (max-width: 768px) {
+  .desktop-window {
+    @apply w-full h-auto;
+  }
 }
