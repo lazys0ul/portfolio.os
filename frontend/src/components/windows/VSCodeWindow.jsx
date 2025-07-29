@@ -1,6 +1,6 @@
 import React from 'react'
 
-const VSCodeWindow = () => {
+const VSCodeWindow = React.memo(() => {
     return (
         <div className="h-full w-full bg-gray-800">
             <iframe 
@@ -14,6 +14,8 @@ const VSCodeWindow = () => {
             {/* Here is the link to the original repo: https://github.com/conwnet/github1s */}
         </div>
     );
-};
+});
+
+VSCodeWindow.displayName = 'VSCodeWindow';
 
 export default VSCodeWindow;

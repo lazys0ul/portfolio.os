@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Wifi, Battery, Volume2, VolumeX, Sun, Moon, Power } from 'lucide-react';
+import { AdaptiveLayoutProvider, useAdaptive, AdaptiveComponent, AdaptiveContainer } from './AdaptiveComponents';
 import TaskBar from './TaskBar';
 import Sidebar from './Sidebar';
 import DesktopIcons from './DesktopIcons';
@@ -7,6 +8,7 @@ import WindowManager from './WindowManager';
 import LoadingScreen from './LoadingScreen';
 import ShutdownScreen from './ShutdownScreen';
 import { personalInfo, wallpapers } from '../mock';
+import '../styles/adaptive.css';
 
 const Desktop = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -17,8 +19,50 @@ const Desktop = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [brightness, setBrightness] = useState(80);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [currentWallpaper, setCurrentWallpaper] = useState(wallpapers[0]);
+  
+  // Set default wallpaper - Tokyo Ghoul Dark theme for first-time visitors
+  const getDefaultWallpaper = () => {
+    return wallpapers.find(w => w.isDefault) || wallpapers[0];
+  };
+  
+  const [currentWallpaper, setCurrentWallpaper] = useState(getDefaultWallpaper());
   const [currentTheme, setCurrentTheme] = useState('dark');
+
+  // Wrap the entire component in AdaptiveLayoutProvider with wallpaper theming
+  return (
+    <AdaptiveLayoutProvider initialWallpaper={currentWallpaper}>
+      <DesktopContent 
+        currentTime={currentTime}
+        setCurrentTime={setCurrentTime}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        isShuttingDown={isShuttingDown}
+        setIsShuttingDown={setIsShuttingDown}
+        openWindows={openWindows}
+        setOpenWindows={setOpenWindows}
+        volume={volume}
+        setVolume={setVolume}
+        isMuted={isMuted}
+        setIsMuted={setIsMuted}
+        brightness={brightness}
+        setBrightness={setBrightness}
+        isDarkMode={isDarkMode}
+        setIsDarkMode={setIsDarkMode}
+        currentWallpaper={currentWallpaper}
+        setCurrentWallpaper={setCurrentWallpaper}
+        currentTheme={currentTheme}
+        setCurrentTheme={setCurrentTheme}
+      />
+    </AdaptiveLayoutProvider>
+  );
+};
+
+const DesktopContent = ({ 
+  currentTime, setCurrentTime, isLoading, setIsLoading, isShuttingDown, setIsShuttingDown,
+  openWindows, setOpenWindows, volume, setVolume, isMuted, setIsMuted, brightness, setBrightness,
+  isDarkMode, setIsDarkMode, currentWallpaper, setCurrentWallpaper, currentTheme, setCurrentTheme
+}) => {
+  const adaptive = useAdaptive();
 
   // Time update effect
   useEffect(() => {
@@ -36,6 +80,15 @@ const Desktop = () => {
     return () => clearTimeout(loadingTimer);
   }, []);
 
+  // Adaptive theme handling
+  useEffect(() => {
+    if (adaptive.colorScheme !== (isDarkMode ? 'dark' : 'light')) {
+      const shouldUseDark = adaptive.colorScheme === 'dark';
+      setIsDarkMode(shouldUseDark);
+      setCurrentTheme(shouldUseDark ? 'dark' : 'light');
+    }
+  }, [adaptive.colorScheme, isDarkMode]);
+
   // Handle wallpaper change
   const changeWallpaper = (wallpaper) => {
     setCurrentWallpaper(wallpaper);
@@ -43,31 +96,27 @@ const Desktop = () => {
     setIsDarkMode(wallpaper.theme === 'dark');
   };
 
-  // Handle window opening
+  // Handle window opening with adaptive sizing
   const openWindow = (appName, appData) => {
     const existingWindow = openWindows.find(w => w.id === appName);
     if (existingWindow) {
       // Bring to front if already open
       setOpenWindows(prev => [
         ...prev.filter(w => w.id !== appName),
-        { ...existingWindow, zIndex: Math.max(...prev.map(w => w.zIndex)) + 1 }
+        { ...existingWindow, zIndex: Math.max(...prev.map(w => w.zIndex)) + 1, isMinimized: false }
       ]);
     } else {
-      // Check if mobile
-      const isMobile = window.innerWidth < 768;
+      // Get adaptive window dimensions
+      const dimensions = adaptive.getWindowDimensions(appName.toLowerCase().replace(' ', '-'));
       
-      // Open new window
+      // Open new window with adaptive sizing
       const newWindow = {
         id: appName,
         title: appName,
         data: appData,
         isMinimized: false,
-        position: isMobile 
-          ? { x: 0, y: 0 } 
-          : { x: 100 + openWindows.length * 30, y: 100 + openWindows.length * 30 },
-        size: isMobile 
-          ? { width: '100vw', height: '100vh' }
-          : { width: 800, height: 600 },
+        position: { x: dimensions.x, y: dimensions.y },
+        size: { width: dimensions.width, height: dimensions.height },
         zIndex: openWindows.length + 1
       };
       setOpenWindows(prev => [...prev, newWindow]);
@@ -139,7 +188,11 @@ const Desktop = () => {
   };
 
   return (
-    <div className={`relative w-full h-screen min-h-screen h-dvh overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
+    <AdaptiveContainer 
+      className={`relative w-full h-screen min-h-screen h-dvh overflow-hidden ${isDarkMode ? 'dark' : ''}`}
+      data-theme={currentTheme}
+      data-wallpaper={currentWallpaper.name}
+    >
       {/* Desktop Wallpaper */}
       <div className="absolute inset-0">
         <div 
@@ -151,13 +204,17 @@ const Desktop = () => {
         <div className={`absolute inset-0 ${isDarkMode ? 'bg-black/30' : 'bg-white/20'}`}></div>
       </div>
 
-      {/* Grid overlay for desktop feel - hide on mobile */}
-      <div className="hidden md:block absolute inset-0 opacity-5">
-        <div className="w-full h-full" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '50px 50px'
-        }}></div>
-      </div>
+      {/* Adaptive Grid overlay for desktop feel */}
+      <AdaptiveComponent
+        desktop={
+          <div className="absolute inset-0 opacity-5">
+            <div className="w-full h-full" style={{
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+              backgroundSize: '50px 50px'
+            }}></div>
+          </div>
+        }
+      />
 
       {/* Top TaskBar */}
       <TaskBar
@@ -234,7 +291,7 @@ const Desktop = () => {
         <div>POCO M4 5G • {personalInfo.username}</div>
         <div className="text-xs opacity-70">{currentWallpaper.name} theme</div>
       </div>
-    </div>
+    </AdaptiveContainer>
   );
 };
 

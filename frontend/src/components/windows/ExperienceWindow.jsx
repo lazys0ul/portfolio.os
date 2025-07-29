@@ -2,7 +2,7 @@ import React from 'react';
 import { Building, Calendar, MapPin, ExternalLink, Briefcase } from 'lucide-react';
 import { experience } from '../../mock';
 
-const ExperienceWindow = () => {
+const ExperienceWindow = React.memo(() => {
   const getTypeColor = (type) => {
     switch (type) {
       case 'Current': return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -102,6 +102,8 @@ const ExperienceWindow = () => {
       </div>
     </div>
   );
-};
+});
+
+ExperienceWindow.displayName = 'ExperienceWindow';
 
 export default ExperienceWindow;

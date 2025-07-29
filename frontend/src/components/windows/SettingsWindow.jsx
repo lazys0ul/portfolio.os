@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Settings, Monitor, Volume2, Wifi, Battery, Smartphone, Info, Image, Palette, HardDrive, Cpu, MemoryStick } from 'lucide-react';
 import { systemInfo, wallpapers } from '../../mock';
+import { useAdaptive } from '../AdaptiveComponents';
 
 const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
-  const [activeTab, setActiveTab] = useState('system');
+  const [activeTab, setActiveTab] = useState('appearance'); // Default to appearance tab
+  const [selectedCategory, setSelectedCategory] = useState('all'); // Category filter state
+  const adaptive = useAdaptive();
 
   const tabs = [
     { id: 'system', name: 'System', icon: Monitor },
@@ -22,7 +25,7 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
           <span>Device Information</span>
         </h3>
         
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div className="p-3 bg-white/5 rounded-lg">
             <span className="text-gray-400">Device:</span>
             <div className="text-white font-medium">{systemInfo.device}</div>
@@ -102,20 +105,52 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
 
   const AppearanceTab = () => (
     <div className="space-y-6">
+      {/* Wallpapers Section */}
       <div className="p-6 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
         <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
           <Image className="w-5 h-5 text-purple-400" />
-          <span>Wallpapers</span>
+          <span>Wallpapers & Themes</span>
         </h3>
         
-        <div className="grid grid-cols-3 gap-4">
-          {wallpapers.map((wallpaper, index) => (
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {['all', 'garuda', 'anime', 'manga', 'nature', 'space'].map((category) => {
+            const count = category === 'all' 
+              ? wallpapers.length 
+              : wallpapers.filter(w => w.category === category).length;
+            
+            return (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-3 py-1 text-xs rounded-full transition-colors capitalize ${
+                  selectedCategory === category 
+                    ? 'bg-cyan-500 text-white' 
+                    : 'bg-white/10 hover:bg-white/20'
+                }`}
+              >
+                {category === 'all' ? 'All Themes' : category} ({count})
+              </button>
+            );
+          })}
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {wallpapers
+            .filter(wallpaper => selectedCategory === 'all' || wallpaper.category === selectedCategory)
+            .map((wallpaper, index) => (
             <button
               key={index}
-              onClick={() => onChangeWallpaper?.(wallpaper)}
+              onClick={() => {
+                onChangeWallpaper?.(wallpaper);
+                // Apply theme colors immediately
+                if (adaptive.changeTheme) {
+                  adaptive.changeTheme(wallpaper);
+                }
+              }}
               className={`relative group overflow-hidden rounded-lg border-2 transition-all duration-300 ${
                 currentWallpaper?.name === wallpaper.name
-                  ? 'border-blue-400 scale-105'
+                  ? `border-[${adaptive.currentTheme.primary}] scale-105`
                   : 'border-white/20 hover:border-white/40'
               }`}
             >
@@ -124,29 +159,132 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
                 style={{ backgroundImage: `url(${wallpaper.url})` }}
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+              
+              {/* Default wallpaper badge */}
+              {wallpaper.isDefault && (
+                <div className="absolute top-1 left-1">
+                  <div className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-2 py-1 rounded-md font-semibold shadow-lg">
+                    DEFAULT
+                  </div>
+                </div>
+              )}
+              
+              {/* Theme indicator */}
+              <div className="absolute top-1 right-1">
+                <div 
+                  className="w-3 h-3 rounded-full border border-white/50"
+                  style={{ backgroundColor: wallpaper.colors?.primary || wallpaper.accent }}
+                  title={`${wallpaper.category} theme`}
+                />
+              </div>
+              
               <div className="absolute bottom-1 left-1 right-1">
                 <p className="text-white text-xs font-medium truncate">{wallpaper.name}</p>
-                <p className="text-gray-300 text-xs">{wallpaper.theme}</p>
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-300 text-xs capitalize">{wallpaper.category}</p>
+                  <p className="text-gray-300 text-xs">{wallpaper.theme}</p>
+                </div>
               </div>
             </button>
           ))}
         </div>
       </div>
 
+      {/* Current Theme Info */}
       <div className="p-6 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
-        <h3 className="text-lg font-semibold mb-4">Theme Settings</h3>
+        <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+          <Palette className="w-5 h-5 text-cyan-400" />
+          <span>Active Theme</span>
+        </h3>
+        
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-400">Wallpaper:</span>
+              <span className="text-white">{currentWallpaper?.name || 'Garuda Eagle Classic'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Category:</span>
+              <span className="text-white capitalize">{currentWallpaper?.category || 'garuda'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Theme Mode:</span>
+              <span className="text-white capitalize">{currentWallpaper?.theme || 'Dark'}</span>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Primary:</span>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded border border-white/30"
+                  style={{ backgroundColor: adaptive.currentTheme.primary }}
+                />
+                <span className="text-white text-xs font-mono">{adaptive.currentTheme.primary}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Secondary:</span>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded border border-white/30"
+                  style={{ backgroundColor: adaptive.currentTheme.secondary }}
+                />
+                <span className="text-white text-xs font-mono">{adaptive.currentTheme.secondary}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Accent:</span>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded border border-white/30"
+                  style={{ backgroundColor: adaptive.currentTheme.accent }}
+                />
+                <span className="text-white text-xs font-mono">{adaptive.currentTheme.accent}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Theme Preview */}
+        <div className="mt-4 p-3 rounded-lg border border-white/10" style={{ backgroundColor: adaptive.currentTheme.surface }}>
+          <div className="text-xs text-gray-400 mb-2">Theme Preview:</div>
+          <div className="flex items-center space-x-2">
+            <div 
+              className="w-6 h-6 rounded-full"
+              style={{ backgroundColor: adaptive.currentTheme.primary }}
+            />
+            <div 
+              className="w-6 h-6 rounded-full"
+              style={{ backgroundColor: adaptive.currentTheme.secondary }}
+            />
+            <div 
+              className="w-6 h-6 rounded-full"
+              style={{ backgroundColor: adaptive.currentTheme.accent }}
+            />
+            <div className="flex-1 text-xs" style={{ color: adaptive.currentTheme.text }}>
+              Dynamic theming active
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Animation & Performance */}
+      <div className="p-6 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+        <h3 className="text-lg font-semibold mb-4">Animation & Performance</h3>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-400">Current Theme:</span>
-            <span className="text-white capitalize">{currentWallpaper?.theme || 'Dark'}</span>
+            <span className="text-gray-400">Reduced Motion:</span>
+            <span className="text-white">{adaptive.reducedMotion ? 'Enabled' : 'Disabled'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Accent Color:</span>
-            <span className="text-white capitalize">{currentWallpaper?.accent || 'Blue'}</span>
+            <span className="text-gray-400">Theme Transitions:</span>
+            <span className="text-white">{adaptive.isTransitioning ? 'Active' : 'Ready'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Active Wallpaper:</span>
-            <span className="text-white">{currentWallpaper?.name || 'Space Nebula'}</span>
+            <span className="text-gray-400">Device Type:</span>
+            <span className="text-white capitalize">{adaptive.deviceType}</span>
           </div>
         </div>
       </div>
@@ -197,7 +335,7 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
             <span className="text-green-300">Excellent</span>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-white/5 rounded-lg">
               <span className="text-gray-400">Network:</span>
               <div className="text-white">Garuda_Network_5G</div>
@@ -235,7 +373,7 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-white/5 rounded-lg">
               <span className="text-gray-400">Power Mode:</span>
               <div className="text-blue-400">Balanced</div>
@@ -263,7 +401,7 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
       <div className="p-6 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
         <h3 className="text-lg font-semibold mb-4">About This Portfolio</h3>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-white/5 rounded-lg">
               <span className="text-gray-400">Version:</span>
               <div className="text-white font-medium">2.0.0</div>
@@ -326,40 +464,44 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white">
-      <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+    <div className="h-full bg-gradient-to-br from-gray-900 to-black text-white overflow-x-auto">
+      <div className="p-4 md:p-8 min-w-max md:min-w-0">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             System Settings
           </h1>
-          <p className="text-gray-400">Configure your system preferences and appearance</p>
+          <p className="text-gray-400 text-sm md:text-base">Configure your system preferences and appearance</p>
         </div>
 
-        <div className="flex space-x-8">
+        <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
           {/* Sidebar */}
-          <div className="w-64 space-y-2">
+          <div className="w-full md:w-64 flex md:flex-col overflow-x-auto md:overflow-x-visible">
+            <div className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2 min-w-max md:min-w-0">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  className={`flex-shrink-0 md:w-full flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 text-sm md:text-base ${
                     activeTab === tab.id
                       ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <IconComponent className="w-5 h-5" />
-                  <span>{tab.name}</span>
+                  <IconComponent className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="whitespace-nowrap">{tab.name}</span>
                 </button>
               );
             })}
+            </div>
           </div>
 
           {/* Content */}
-          <div className="flex-1">
-            {renderTabContent()}
+          <div className="flex-1 min-w-0">
+            <div className="overflow-x-auto">
+              {renderTabContent()}
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Github, Code, Play, Calendar, Tag } from 'lucide-react';
 import { projects } from '../../mock';
 
-const ProjectsWindow = () => {
+const ProjectsWindow = React.memo(() => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -187,6 +187,8 @@ const ProjectsWindow = () => {
       </div>
     </div>
   );
-};
+});
+
+ProjectsWindow.displayName = 'ProjectsWindow';
 
 export default ProjectsWindow;

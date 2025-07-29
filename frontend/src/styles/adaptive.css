@@ -1,0 +1,372 @@
+/* Adaptive CSS - Automatically adjusts based on device capabilities */
+
+/* CSS Custom Properties for adaptive design */
+:root {
+  --adaptive-grid-columns: 3;
+  --optimal-grid-columns: 3; /* Fallback for grid system */
+  --adaptive-spacing: 16px;
+  --adaptive-border-radius: 8px;
+  --adaptive-animation-duration: 300ms;
+  --adaptive-animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Dynamic Theme Colors - Updated by useColorTheme hook */
+  --theme-primary: #00d4ff;
+  --theme-secondary: #0099cc;
+  --theme-background: #1a1a2e;
+  --theme-surface: #16213e;
+  --theme-text: #ffffff;
+  --theme-text-secondary: #a0a0a0;
+  --theme-accent: #00d4ff;
+  
+  /* Theme RGB values for opacity usage */
+  --theme-primary-rgb: 0, 212, 255;
+  --theme-secondary-rgb: 0, 153, 204;
+  --theme-accent-rgb: 0, 212, 255;
+  
+  /* Opacity variants */
+  --theme-primary-10: #00d4ff1a;
+  --theme-primary-20: #00d4ff33;
+  --theme-primary-50: #00d4ff80;
+  --theme-accent-10: #00d4ff1a;
+  --theme-accent-20: #00d4ff33;
+  --theme-accent-50: #00d4ff80;
+}
+
+/* Smooth theme transitions */
+.theme-transitioning {
+  transition: background-color 500ms ease, color 500ms ease !important;
+}
+
+.theme-transitioning * {
+  transition: background-color 500ms ease, color 500ms ease, border-color 500ms ease, box-shadow 500ms ease !important;
+}
+
+/* Adaptive Window Styles */
+.adaptive-window {
+  background: var(--theme-surface, rgba(17, 24, 39, 0.95));
+  border: 1px solid var(--theme-accent, #00d4ff);
+  border-radius: var(--adaptive-border-radius);
+  box-shadow: 0 25px 50px -12px rgba(var(--theme-accent-rgb, 0, 212, 255), 0.4);
+  overflow: hidden;
+  position: relative;
+  color: var(--theme-text, #ffffff);
+}
+
+.adaptive-window.supports-backdrop {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.adaptive-window.no-backdrop {
+  background: var(--theme-surface, rgba(17, 24, 39, 0.98));
+}
+
+.adaptive-window.maximized {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.adaptive-window .window-titlebar {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.adaptive-window .window-titlebar button {
+  transition: all 0.2s ease;
+}
+
+.adaptive-window .window-titlebar button:active {
+  transform: scale(0.95) !important;
+}
+
+.adaptive-window.window-overlay {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.adaptive-window.window-simplified {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Adaptive Icon Grid */
+.adaptive-icon-grid {
+  padding: var(--adaptive-spacing);
+}
+
+.adaptive-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--theme-primary-10, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--theme-primary-20, rgba(255, 255, 255, 0.2));
+  border-radius: var(--adaptive-border-radius);
+  transition: all var(--adaptive-animation-duration) var(--adaptive-animation-easing);
+  color: var(--theme-text, white);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.adaptive-icon.hover-enabled:hover {
+  background: var(--theme-primary-20, rgba(255, 255, 255, 0.2));
+  border-color: var(--theme-accent, rgba(255, 255, 255, 0.4));
+  transform: translateY(-2px);
+}
+
+.adaptive-icon.touch-enabled:active {
+  background: var(--theme-primary-10, rgba(255, 255, 255, 0.15));
+  transform: scale(0.95);
+}
+
+.adaptive-icon .icon-visual {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--theme-primary, #3b82f6), var(--theme-secondary, #8b5cf6));
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(var(--theme-primary-rgb, 59, 130, 246), 0.3);
+}
+
+.adaptive-icon .icon-label {
+  text-align: center;
+  line-height: 1.2;
+  opacity: 0.9;
+  color: var(--theme-text, #ffffff);
+}
+
+/* Device-specific adaptations */
+[data-device-type="mobile"] .adaptive-icon {
+  padding: 8px;
+  gap: 6px;
+}
+
+[data-device-type="mobile"] .adaptive-icon .icon-visual {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+[data-device-type="mobile"] .adaptive-icon .icon-label {
+  font-size: 11px;
+}
+
+[data-device-type="tablet"] .adaptive-icon {
+  padding: 10px;
+}
+
+[data-device-type="tablet"] .adaptive-icon .icon-visual {
+  width: 44px;
+  height: 44px;
+}
+
+[data-device-type="desktop"] .adaptive-icon,
+[data-device-type="desktop-large"] .adaptive-icon {
+  padding: 14px;
+}
+
+/* Orientation-specific adaptations */
+[data-orientation="landscape"][data-device-type="mobile"] .adaptive-icon-grid {
+  padding: 8px;
+  gap: 8px;
+}
+
+[data-orientation="landscape"][data-device-type="mobile"] .adaptive-icon {
+  padding: 6px;
+  gap: 4px;
+}
+
+[data-orientation="landscape"][data-device-type="mobile"] .adaptive-icon .icon-visual {
+  width: 36px;
+  height: 36px;
+}
+
+[data-orientation="landscape"][data-device-type="mobile"] .adaptive-icon .icon-label {
+  font-size: 10px;
+}
+
+/* Platform-specific adaptations */
+[data-platform="ios"] .adaptive-icon {
+  border-radius: 12px;
+}
+
+[data-platform="ios"] .adaptive-icon .icon-visual {
+  border-radius: 10px;
+}
+
+[data-platform="android"] .adaptive-icon {
+  border-radius: 8px;
+}
+
+[data-platform="android"] .adaptive-icon .icon-visual {
+  border-radius: 8px;
+}
+
+/* Browser-specific optimizations */
+[data-browser="safari"] .adaptive-window {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+[data-browser="chrome"] .adaptive-window {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+[data-browser="firefox"] .adaptive-window.supports-backdrop {
+  background: rgba(17, 24, 39, 0.92);
+}
+
+/* Accessibility adaptations */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --adaptive-animation-duration: 0ms;
+  }
+  
+  .adaptive-icon {
+    transition: none;
+  }
+  
+  .adaptive-icon.hover-enabled:hover {
+    transform: none;
+  }
+  
+  .adaptive-window {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .adaptive-icon {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+  }
+  
+  .adaptive-window {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .adaptive-window {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #1f2937;
+  }
+  
+  .adaptive-icon {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #1f2937;
+  }
+}
+
+/* Responsive grid using CSS custom properties */
+.adaptive-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--optimal-grid-columns, 3), 1fr);
+  gap: var(--adaptive-spacing);
+}
+
+/* Container queries support (for modern browsers) */
+@supports (container-type: inline-size) {
+  .adaptive-container {
+    container-type: inline-size;
+  }
+  
+  @container (max-width: 480px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 3;
+      --adaptive-spacing: 12px;
+    }
+  }
+  
+  @container (min-width: 481px) and (max-width: 768px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 4;
+      --adaptive-spacing: 14px;
+    }
+  }
+  
+  @container (min-width: 769px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 5;
+      --adaptive-spacing: 16px;
+    }
+  }
+}
+
+/* Fallback for browsers without container query support */
+@supports not (container-type: inline-size) {
+  /* Default mobile-first approach */
+  .adaptive-icon-grid {
+    --optimal-grid-columns: 3;
+    --adaptive-spacing: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 3;
+      --adaptive-spacing: 12px;
+    }
+  }
+  
+  @media (min-width: 481px) and (max-width: 768px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 4;
+      --adaptive-spacing: 14px;
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 5;
+      --adaptive-spacing: 16px;
+    }
+  }
+  
+  @media (min-width: 1025px) {
+    .adaptive-icon-grid {
+      --optimal-grid-columns: 6;
+      --adaptive-spacing: 18px;
+    }
+  }
+}
+
+/* Smooth transitions for layout changes */
+.adaptive-icon-grid,
+.adaptive-icon,
+.adaptive-window {
+  will-change: auto;
+}
+
+/* Performance optimizations for mobile */
+[data-device-type="mobile"] .adaptive-icon-grid,
+[data-device-type="mobile"] .adaptive-icon,
+[data-device-type="mobile"] .adaptive-window {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* High DPI optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  .adaptive-icon .icon-visual {
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* Ultra-wide screen adaptations */
+@media (min-width: 2560px) {
+  .adaptive-icon-grid {
+    --optimal-grid-columns: 8;
+    max-width: 1200px;
+  }
+}

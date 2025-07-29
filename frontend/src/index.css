@@ -18,13 +18,14 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* Prevent visual glitches during scrolling */
-    overflow: hidden;
     backface-visibility: hidden;
     /* Mobile height fixes */
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for modern browsers */
     min-height: -webkit-fill-available;
     position: relative;
+    /* Prevent scrolling beyond content boundaries */
+    overflow: hidden;
 }
 
 code {
@@ -345,13 +346,25 @@ input, textarea, select {
 /* Orientation change handling */
 @media screen and (max-width: 768px) and (orientation: landscape) {
   .desktop-icons {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 100%;
   }
   
   .mobile-scroll-container {
-    height: calc(100vh - 48px) !important;
-    height: calc(100dvh - 48px) !important;
+    height: calc(100vh - 40px) !important;
+    height: calc(100dvh - 40px) !important;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  
+  /* Ensure viewport stays within bounds */
+  body, html, #root {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 }
 

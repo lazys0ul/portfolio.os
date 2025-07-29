@@ -139,35 +139,150 @@ export const systemInfo = {
 };
 
 export const wallpapers = [
+  // Default Garuda Linux Wallpapers
   {
-    name: "Space Nebula",
+    name: "Garuda Eagle Classic",
     url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072",
     theme: "dark",
-    accent: "blue"
+    accent: "#00d4ff", // Garuda cyan
+    category: "garuda",
+    colors: {
+      primary: "#00d4ff",
+      secondary: "#0099cc", 
+      background: "#1a1a2e",
+      surface: "#16213e",
+      text: "#ffffff",
+      textSecondary: "#a0a0a0"
+    }
   },
   {
-    name: "Aurora",
-    url: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070",
-    theme: "dark", 
-    accent: "green"
+    name: "Garuda Fire",
+    url: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?q=80&w=2135",
+    theme: "dark",
+    accent: "#ff6b35",
+    category: "garuda",
+    colors: {
+      primary: "#ff6b35",
+      secondary: "#e55100",
+      background: "#2e1a1a",
+      surface: "#3e2016",
+      text: "#ffffff", 
+      textSecondary: "#ffb3a0"
+    }
+  },
+
+  // Tokyo Ghoul Anime Wallpapers
+  {
+    name: "Tokyo Ghoul",
+    url: "https://images3.alphacoders.com/681/681016.jpg",
+    theme: "dark",
+    accent: "#dc2626", // Blood red
+    category: "anime",
+    colors: {
+      primary: "#dc2626",
+      secondary: "#991b1b",
+      background: "#0f0f0f",
+      surface: "#1f1f1f",
+      text: "#ffffff",
+      textSecondary: "#fca5a5"
+    },
+    isDefault: true // Set as default wallpaper
   },
   {
-    name: "Mountains",
-    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070",
-    theme: "light",
-    accent: "orange"
+    name: "Tokyo Ghoul 1",
+    url: "https://images7.alphacoders.com/782/782225.jpg",
+    theme: "dark",
+    accent: "#7c3aed", // Purple mask
+    category: "anime",
+    colors: {
+      primary: "#7c3aed",
+      secondary: "#5b21b6",
+      background: "#1e1024",
+      surface: "#2e1065",
+      text: "#ffffff",
+      textSecondary: "#c4b5fd"
+    }
+  },
+
+  // Bleach Anime Wallpapers
+  {
+    name: "Bleach 1",
+    url: "https://images2.alphacoders.com/221/221620.jpg",
+    theme: "dark",
+    accent: "#0ea5e9", // Soul blue
+    category: "anime",
+    colors: {
+      primary: "#0ea5e9",
+      secondary: "#0284c7",
+      background: "#0c1929",
+      surface: "#1e293b",
+      text: "#f1f5f9",
+      textSecondary: "#94a3b8"
+    }
   },
   {
-    name: "Ocean",
-    url: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?q=80&w=2069",
-    theme: "light",
-    accent: "cyan"
+    name: "Bleach 2",
+    url: "https://images3.alphacoders.com/946/94605.jpg",
+    theme: "dark",
+    accent: "#fbbf24", // Golden blade
+    category: "anime",
+    colors: {
+      primary: "#fbbf24",
+      secondary: "#f59e0b",
+      background: "#1f1611",
+      surface: "#292017",
+      text: "#fef3c7",
+      textSecondary: "#fcd34d"
+    }
+  },
+
+  // Manga Wallpapers
+  {
+    name: "Manga Classic",
+    url: "https://images6.alphacoders.com/136/1367999.jpeg",
+    theme: "dark",
+    accent: "#ff69b4", // Manga pink
+    category: "manga",
+    colors: {
+      primary: "#ff69b4",
+      secondary: "#ff1493",
+      background: "#2d1b2e",
+      surface: "#3d2043",
+      text: "#ffffff",
+      textSecondary: "#ffb3d9"
+    }
+  },
+
+  // Nature & Space (Reduced collection)
+  {
+    name: "Aurora Borealis",
+    url: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070", 
+    theme: "dark",
+    accent: "#10b981",
+    category: "nature",
+    colors: {
+      primary: "#10b981",
+      secondary: "#059669",
+      background: "#064e3b",
+      surface: "#0f2027",
+      text: "#d1fae5",
+      textSecondary: "#6ee7b7"
+    }
   },
   {
-    name: "Galaxy",
+    name: "Galaxy Storm", 
     url: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?q=80&w=2072",
     theme: "dark",
-    accent: "purple"
+    accent: "#a855f7",
+    category: "space", 
+    colors: {
+      primary: "#a855f7",
+      secondary: "#9333ea",
+      background: "#1e1024",
+      surface: "#2e1065",
+      text: "#f3e8ff",
+      textSecondary: "#c4b5fd"
+    }
   }
 ];
 

@@ -134,33 +134,40 @@ const DesktopIcons = ({ onOpenWindow }) => {
         </div>
       </div>
 
-      {/* Mobile Layout - FIXED */}
-      <div className="md:hidden p-4 pt-20 pb-24">
-        <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
-          {desktopApps.map((app, index) => {
-            const IconComponent = iconMap[app.icon];
-            
-            return (
-              <div
-                key={index}
-                className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 cursor-pointer hover:bg-white/10 active:bg-white/15 transition-all duration-200 touch-manipulation"
-                onClick={() => onOpenWindow(app.name)}
-                style={{
-                  WebkitTapHighlightColor: 'rgba(255,255,255,0.1)',
-                  WebkitTouchCallout: 'none',
-                  WebkitUserSelect: 'none',
-                  userSelect: 'none'
-                }}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  {IconComponent ? <IconComponent className="w-6 h-6 text-white" /> : <span className="text-2xl">📁</span>}
+      {/* Mobile Layout - Scrollable Container */}
+      <div className="md:hidden mobile-scroll-container absolute inset-0 pt-12 pb-12 overflow-y-auto" style={{
+        top: '40px', // Account for taskbar
+        height: 'calc(100vh - 40px)',
+        height: 'calc(100dvh - 40px)',
+        WebkitOverflowScrolling: 'touch'
+      }}>
+        <div className="p-4 min-h-full">
+          <div className="desktop-icons grid grid-cols-3 gap-4 max-w-sm mx-auto pb-20">
+            {desktopApps.map((app, index) => {
+              const IconComponent = iconMap[app.icon];
+              
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 cursor-pointer hover:bg-white/10 active:bg-white/15 transition-all duration-200 touch-manipulation"
+                  onClick={() => onOpenWindow(app.name)}
+                  style={{
+                    WebkitTapHighlightColor: 'rgba(255,255,255,0.1)',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    {IconComponent ? <IconComponent className="w-6 h-6 text-white" /> : <span className="text-2xl">📁</span>}
+                  </div>
+                  <span className="text-white text-xs font-medium text-center leading-tight">
+                    {app.name}
+                  </span>
                 </div>
-                <span className="text-white text-xs font-medium text-center leading-tight">
-                  {app.name}
-                </span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Code, Database, Server, Smartphone, Globe, Settings, Zap, Users } from 'lucide-react';
 import { techStack } from '../../mock';
 
-const SkillsWindow = () => {
+const SkillsWindow = React.memo(() => {
   const [activeCategory, setActiveCategory] = useState('languages');
 
   const skillCategories = [
@@ -192,6 +192,8 @@ const SkillsWindow = () => {
       </div>
     </div>
   );
-};
+});
+
+SkillsWindow.displayName = 'SkillsWindow';
 
 export default SkillsWindow;

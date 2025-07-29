@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SpotifyWindow = () => {
+const SpotifyWindow = React.memo(() => {
     return (
         <div className="h-full w-full bg-gray-800">
             <iframe 
@@ -16,7 +16,9 @@ const SpotifyWindow = () => {
             />
         </div>
     );
-};
+});
+
+SpotifyWindow.displayName = 'SpotifyWindow';
 
 export default SpotifyWindow;
 

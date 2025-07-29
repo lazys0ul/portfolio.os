@@ -3,6 +3,8 @@ import {
   Menu, Wifi, Battery, Volume2, VolumeX, Sun, Moon, 
   Power, Settings, Monitor, Smartphone 
 } from 'lucide-react';
+import { useAdaptive } from './AdaptiveComponents';
+import { AdaptiveComponent } from './AdaptiveComponents';
 import { systemInfo } from '../mock';
 
 const TaskBar = ({ 
@@ -23,6 +25,7 @@ const TaskBar = ({
 }) => {
   const [showSystemPanel, setShowSystemPanel] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
+  const adaptive = useAdaptive();
 
   const handleActivitiesClick = () => {
     setShowActivities(!showActivities);
@@ -35,55 +38,83 @@ const TaskBar = ({
   return (
     <>
       {/* Main TaskBar */}
-      <div className="absolute top-0 left-0 right-0 h-10 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
+      <div className="absolute top-0 left-0 right-0 adaptive-taskbar bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
         <div className="flex items-center justify-between h-full px-4">
-          {/* Left Section - Activities (hidden on mobile) */}
+          {/* Left Section - Activities and App Info */}
           <div className="flex items-center space-x-4">
-            <button 
-              onClick={handleActivitiesClick}
-              className="hidden md:block text-white text-sm font-medium hover:bg-white/10 px-3 py-1 rounded transition-colors touch-manipulation"
-              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
-            >
-              Activities
-            </button>
-            
-            <div className="hidden md:block text-white/70 text-sm font-mono">
-              Garuda Linux
-            </div>
-
-            {/* Mobile App Title - Show only on mobile when window is open */}
-            <div className="block md:hidden text-white text-sm font-medium truncate max-w-[200px]">
-              {openWindows.length > 0 ? openWindows[openWindows.length - 1].title : 'Portfolio OS'}
-            </div>
-
-            {/* Window Buttons - Only show on desktop */}
-            {openWindows.length > 0 && (
-              <div className="hidden md:flex items-center space-x-1 ml-4">
-                {openWindows.map((window) => (
-                  <button
-                    key={window.id}
-                    onClick={() => {
-                      if (window.isMinimized) {
-                        onRestoreWindow(window.id);
-                      } else {
-                        // Focus the window if it's already open
-                        onFocusWindow && onFocusWindow(window.id);
-                      }
-                    }}
-                    className={`
-                      px-2 py-1 text-xs rounded transition-colors
-                      ${window.isMinimized 
-                        ? 'bg-white/10 text-white/70 hover:bg-white/20' 
-                        : 'bg-blue-500/70 text-white hover:bg-blue-500'
-                      }
-                    `}
-                    title={window.isMinimized ? `Restore ${window.title}` : window.title}
+            <AdaptiveComponent
+              mobile={
+                <div className="text-white text-sm font-medium">
+                  {openWindows.length > 0 ? (
+                    <div className="flex items-center space-x-2">
+                      <span className="truncate max-w-[150px]">
+                        {openWindows.find(w => !w.isMinimized)?.title || 'Portfolio OS'}
+                      </span>
+                      {openWindows.filter(w => w.isMinimized).length > 0 && (
+                        <button
+                          onClick={() => {
+                            const minimizedWindow = openWindows.find(w => w.isMinimized);
+                            if (minimizedWindow && onRestoreWindow) {
+                              onRestoreWindow(minimizedWindow.id);
+                            }
+                          }}
+                          className="px-2 py-1 text-xs bg-white/10 hover:bg-white/20 rounded transition-colors touch-manipulation"
+                        >
+                          {openWindows.filter(w => w.isMinimized).length} minimized
+                        </button>
+                      )}
+                    </div>
+                  ) : 'Portfolio OS'}
+                </div>
+              }
+              desktop={
+                <>
+                  <button 
+                    onClick={handleActivitiesClick}
+                    className="text-white text-sm font-medium hover:bg-white/10 px-3 py-1 rounded transition-colors"
                   >
-                    {window.title}
+                    Activities
                   </button>
-                ))}
-              </div>
-            )}
+                  
+                  <div className="text-white/70 text-sm font-mono">
+                    Garuda Linux
+                  </div>
+                </>
+              }
+            />
+
+            {/* Window Buttons - Desktop Only */}
+            <AdaptiveComponent
+              mobile={null}
+              desktop={
+                openWindows.length > 0 && (
+                  <div className="flex items-center space-x-1 ml-4">
+                    {openWindows.map((window) => (
+                      <button
+                        key={window.id}
+                        onClick={() => {
+                          if (window.isMinimized) {
+                            onRestoreWindow(window.id);
+                          } else {
+                            onFocusWindow && onFocusWindow(window.id);
+                          }
+                        }}
+                        className={`
+                          px-2 py-1 text-xs rounded transition-colors
+                          ${window.isMinimized 
+                            ? 'bg-white/10 text-white/70 hover:bg-white/20' 
+                            : 'bg-blue-500/70 text-white hover:bg-blue-500'
+                          }
+                        `}
+                        title={window.isMinimized ? `Restore ${window.title}` : window.title}
+                      >
+                        {window.title}
+                      </button>
+                    ))}
+                  </div>
+                )
+              }
+            />
           </div>
 
           {/* Center Section - Time */}
