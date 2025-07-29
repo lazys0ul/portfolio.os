@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Power, Terminal, Monitor } from 'lucide-react';
+import { Power, Terminal, Monitor, RotateCcw } from 'lucide-react';
 
 const ShutdownScreen = () => {
   const [shutdownStage, setShutdownStage] = useState(0);
   const [terminalLines, setTerminalLines] = useState([]);
   const [progress, setProgress] = useState(0);
   const [showFinalScreen, setShowFinalScreen] = useState(false);
+  const [canRestart, setCanRestart] = useState(false);
 
   const shutdownMessages = [
     "[ OK ] Saving user session data...",
@@ -35,21 +36,25 @@ const ShutdownScreen = () => {
       setShowFinalScreen(true);
     }, 6000);
 
-    // Redirect after shutdown animation
+    // Enable restart capability instead of auto-reload
     setTimeout(() => {
-      window.location.reload();
-    }, 10000);
+      setCanRestart(true);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, []);
 
+  const handleRestart = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="w-full h-screen h-dvh relative overflow-auto">
-      {/* Translucent background showing desktop underneath */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-slate-900/95 to-black/95 backdrop-blur-lg">
+      {/* Enhanced translucent background - more transparent to show website silhouette */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 via-slate-900/70 to-black/80 backdrop-blur-md">
         {/* Subtle grid pattern */}
         <div 
-          className="absolute inset-0 opacity-10"
+          className="absolute inset-0 opacity-5"
           style={{
             backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)',
             backgroundSize: '40px 40px'
@@ -120,15 +125,29 @@ const ShutdownScreen = () => {
             </div>
           </>
         ) : (
-          /* Professional Final Screen */
+          /* Enhanced Final Screen with Restart Capability */
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-2xl opacity-80">
-                <Power className="w-12 h-12 text-gray-300" />
+              <div 
+                className={`w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
+                  canRestart ? 'opacity-100 hover:scale-110 cursor-pointer hover:from-red-500 hover:to-orange-500' : 'opacity-80'
+                }`}
+                onClick={canRestart ? handleRestart : undefined}
+              >
+                {canRestart ? (
+                  <RotateCcw className="w-12 h-12 text-white animate-pulse" />
+                ) : (
+                  <Power className="w-12 h-12 text-gray-300" />
+                )}
               </div>
               <h2 className="text-3xl font-bold text-gray-300 mb-4">System Offline</h2>
               <p className="text-gray-400 text-lg mb-2">Thank you for visiting</p>
-              <p className="text-gray-500 text-sm">Portfolio will restart shortly...</p>
+              
+              {canRestart ? (
+                <p className="text-gray-500 text-sm">Click the power icon to restart</p>
+              ) : (
+                <p className="text-gray-500 text-sm">System shutting down...</p>
+              )}
             </div>
           </div>
         )}
