@@ -79,22 +79,37 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
     }
   }, [currentWallpaper, onChangeWallpaper]);
 
-  const Window = React.memo(({ window }) => {
+  const Window = React.memo(({ window: windowProp }) => {
     const windowRef = useRef(null);
     const contentRef = useRef(null);  // Reference to content area
-    const windowId = window.id;
+    const windowId = windowProp.id;
+    const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+
+    // Update mobile state on resize
+    useEffect(() => {
+      const checkMobile = () => setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+      }
+    }, []);
     
     // Get window state or initialize with defaults
     const windowState = windowStates[windowId] || {
       isMaximized: false,
       previousSize: null,
-      currentPosition: window.position,
-      currentSize: window.size
+      currentPosition: windowProp.position,
+      currentSize: windowProp.size
     };
 
-    // Use current window data as fallback if state is not initialized
-    const displayPosition = windowState.currentPosition || window.position;
-    const displaySize = windowState.currentSize || window.size;
+    // For mobile, use full screen dimensions
+    const displayPosition = isMobile 
+      ? { x: 0, y: 0 }
+      : windowState.currentPosition || windowProp.position;
+    
+    const displaySize = isMobile 
+      ? { width: '100vw', height: '100vh' }
+      : windowState.currentSize || windowProp.size;
 
     // Preserve scroll position on re-render
     useEffect(() => {
@@ -135,17 +150,17 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
     const handleMouseDown = (e, action) => {
       e.preventDefault();
       e.stopPropagation();
-      onFocusWindow(window.id);
+      onFocusWindow(windowProp.id);
 
       if (action === 'drag') {
         setDragging({
-          windowId: window.id,
+          windowId: windowProp.id,
           offsetX: e.clientX - displayPosition.x,
           offsetY: e.clientY - displayPosition.y
         });
       } else if (action === 'resize') {
         setResizing({
-          windowId: window.id,
+          windowId: windowProp.id,
           startX: e.clientX,
           startY: e.clientY,
           startWidth: displaySize.width,
@@ -162,8 +177,8 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
         updateWindowState({
           isMaximized: true,
           previousSize: {
-            position: { ...window.position },
-            size: { ...window.size }
+            position: { ...windowProp.position },
+            size: { ...windowProp.size }
           },
           currentPosition: { x: 16, y: 40 },
           currentSize: { 
@@ -185,29 +200,37 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
     const handleMinimize = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      onMinimizeWindow(window.id);
+      onMinimizeWindow(windowProp.id);
     };
 
     const handleClose = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      onCloseWindow(window.id);
+      onCloseWindow(windowProp.id);
     };
 
-    if (window.isMinimized) {
+    if (windowProp.isMinimized) {
       return null;
     }
 
     return (
       <div
         ref={windowRef}
-        className="absolute bg-gray-900/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl overflow-hidden"
-        style={{
+        className={`${isMobile ? 'fixed inset-0' : 'absolute'} bg-gray-900/95 backdrop-blur-lg border border-white/20 ${isMobile ? 'rounded-none' : 'rounded-lg'} shadow-2xl overflow-hidden`}
+        style={isMobile ? {
+          width: '100vw',
+          height: '100vh',
+          height: '100dvh', // Dynamic viewport height
+          top: 0,
+          left: 0,
+          zIndex: windowProp.zIndex,
+          borderRadius: 0,
+        } : {
           left: displayPosition.x,
           top: displayPosition.y,
           width: displaySize.width,
           height: displaySize.height,
-          zIndex: window.zIndex
+          zIndex: windowProp.zIndex
         }}
         onMouseDown={(e) => {
           // Only focus window if clicking on header or window border, not content area
@@ -219,82 +242,108 @@ const WindowManager = ({ windows, onCloseWindow, onMinimizeWindow, onFocusWindow
                                target.closest('input, textarea, button, [contenteditable]');
           
           if (!isContentArea) {
-            onFocusWindow(window.id);
+            onFocusWindow(windowProp.id);
           }
         }}
       >
         {/* Window Header */}
         <div 
-          className="flex items-center justify-between px-4 py-2 bg-black/80 border-b border-white/10 cursor-move select-none"
-          onMouseDown={(e) => handleMouseDown(e, 'drag')}
+          className={`flex items-center justify-between px-4 py-2 bg-black/80 border-b border-white/10 select-none ${isMobile ? 'cursor-default' : 'cursor-move'}`}
+          onMouseDown={isMobile ? undefined : (e) => handleMouseDown(e, 'drag')}
         >
           <div className="flex items-center space-x-2">
             <button 
               onClick={handleClose}
               onMouseDown={(e) => e.stopPropagation()}
-              className="w-3 h-3 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
+              className={`${isMobile ? 'w-4 h-4' : 'w-3 h-3'} bg-red-500 hover:bg-red-600 rounded-full transition-colors touch-manipulation`}
+              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
             />
             <button 
               onClick={handleMinimize}
               onMouseDown={(e) => e.stopPropagation()}
-              className="w-3 h-3 bg-yellow-500 hover:bg-yellow-600 rounded-full transition-colors"
+              className={`${isMobile ? 'w-4 h-4' : 'w-3 h-3'} bg-yellow-500 hover:bg-yellow-600 rounded-full transition-colors touch-manipulation`}
+              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
             />
             <button 
               onClick={handleMaximize}
               onMouseDown={(e) => e.stopPropagation()}
-              className="w-3 h-3 bg-green-500 hover:bg-green-600 rounded-full transition-colors"
+              className={`${isMobile ? 'w-4 h-4' : 'w-3 h-3'} bg-green-500 hover:bg-green-600 rounded-full transition-colors touch-manipulation`}
+              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
             />
           </div>
           
           <h3 className="text-white font-medium text-sm flex-1 text-center pointer-events-none">
-            {window.title}
+            {windowProp.title}
           </h3>
           
           <div className="flex items-center space-x-1">
-            <button
-              onClick={handleMinimize}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
-            >
-              <Minus className="w-3 h-3 text-white" />
-            </button>
-            <button
-              onClick={handleMaximize}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
-            >
-              {windowState.isMaximized ? <Minimize2 className="w-3 h-3 text-white" /> : <Maximize2 className="w-3 h-3 text-white" />}
-            </button>
-            <button
-              onClick={handleClose}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="w-6 h-6 bg-red-500/80 hover:bg-red-500 rounded flex items-center justify-center transition-colors"
-            >
-              <X className="w-3 h-3 text-white" />
-            </button>
+            {isMobile ? (
+              <button
+                onClick={handleClose}
+                onMouseDown={(e) => e.stopPropagation()}
+                className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleMinimize}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+                >
+                  <Minus className="w-3 h-3 text-white" />
+                </button>
+                <button
+                  onClick={handleMaximize}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-6 h-6 bg-white/10 hover:bg-white/20 rounded flex items-center justify-center transition-colors"
+                >
+                  {windowState.isMaximized ? <Minimize2 className="w-3 h-3 text-white" /> : <Maximize2 className="w-3 h-3 text-white" />}
+                </button>
+                <button
+                  onClick={handleClose}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-6 h-6 bg-red-500/80 hover:bg-red-500 rounded flex items-center justify-center transition-colors"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
         {/* Window Content - Simple div with anti-flash properties */}
         <div 
           ref={contentRef}
-          data-window-id={window.id}
-          className="scroll-container h-full pb-8 overflow-y-auto relative"
-          style={{ 
+          data-window-id={windowProp.id}
+          className={`scroll-container h-full ${isMobile ? 'pb-4' : 'pb-8'} overflow-y-auto relative touch-manipulation`}
+          style={isMobile ? { 
+            height: 'calc(100vh - 56px)', // Account for mobile header
+            height: 'calc(100dvh - 56px)',
+            WebkitOverflowScrolling: 'touch',
+            maxHeight: 'calc(100vh - 56px)',
+            maxHeight: 'calc(100dvh - 56px)',
+          } : { 
             height: 'calc(100% - 40px)'
           }}
           onScroll={handleScroll}
         >
-          {getWindowComponent(window.id, window.data)}
+          <div className={isMobile ? 'p-4' : 'p-0'}>
+            {getWindowComponent(windowProp.id, windowProp.data)}
+          </div>
         </div>
 
-        {/* Resize Handle */}
-        <div 
-          className="absolute bottom-0 right-0 w-4 h-4 bg-white/10 cursor-se-resize"
-          onMouseDown={(e) => handleMouseDown(e, 'resize')}
-        >
-          <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-white/40"></div>
-        </div>
+        {/* Resize Handle - Only show on desktop */}
+        {!isMobile && (
+          <div 
+            className="absolute bottom-0 right-0 w-4 h-4 bg-white/10 cursor-se-resize"
+            onMouseDown={(e) => handleMouseDown(e, 'resize')}
+          >
+            <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-white/40"></div>
+          </div>
+        )}
       </div>
     );
   });

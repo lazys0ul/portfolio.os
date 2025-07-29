@@ -61,7 +61,7 @@ portfolio.os/
 ### Quick Start (After Initial Setup)
 ```bash
 # Frontend (Terminal 1)
-cd frontend && npm start
+cd frontend; && npm start
 
 # Backend (Terminal 2) 
 cd backend && python server.py

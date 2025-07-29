@@ -53,14 +53,21 @@ const Desktop = () => {
         { ...existingWindow, zIndex: Math.max(...prev.map(w => w.zIndex)) + 1 }
       ]);
     } else {
+      // Check if mobile
+      const isMobile = window.innerWidth < 768;
+      
       // Open new window
       const newWindow = {
         id: appName,
         title: appName,
         data: appData,
         isMinimized: false,
-        position: { x: 100 + openWindows.length * 30, y: 100 + openWindows.length * 30 },
-        size: { width: 800, height: 600 },
+        position: isMobile 
+          ? { x: 0, y: 0 } 
+          : { x: 100 + openWindows.length * 30, y: 100 + openWindows.length * 30 },
+        size: isMobile 
+          ? { width: '100vw', height: '100vh' }
+          : { width: 800, height: 600 },
         zIndex: openWindows.length + 1
       };
       setOpenWindows(prev => [...prev, newWindow]);
@@ -132,7 +139,7 @@ const Desktop = () => {
   };
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`relative w-full h-screen min-h-screen h-dvh overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
       {/* Desktop Wallpaper */}
       <div className="absolute inset-0">
         <div 
@@ -144,8 +151,8 @@ const Desktop = () => {
         <div className={`absolute inset-0 ${isDarkMode ? 'bg-black/30' : 'bg-white/20'}`}></div>
       </div>
 
-      {/* Grid overlay for desktop feel */}
-      <div className="absolute inset-0 opacity-5">
+      {/* Grid overlay for desktop feel - hide on mobile */}
+      <div className="hidden md:block absolute inset-0 opacity-5">
         <div className="w-full h-full" style={{
           backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
           backgroundSize: '50px 50px'

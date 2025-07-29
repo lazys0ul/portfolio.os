@@ -37,22 +37,28 @@ const TaskBar = ({
       {/* Main TaskBar */}
       <div className="absolute top-0 left-0 right-0 h-10 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
         <div className="flex items-center justify-between h-full px-4">
-          {/* Left Section - Activities */}
+          {/* Left Section - Activities (hidden on mobile) */}
           <div className="flex items-center space-x-4">
             <button 
               onClick={handleActivitiesClick}
-              className="text-white text-sm font-medium hover:bg-white/10 px-3 py-1 rounded transition-colors"
+              className="hidden md:block text-white text-sm font-medium hover:bg-white/10 px-3 py-1 rounded transition-colors touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
             >
               Activities
             </button>
             
-            <div className="text-white/70 text-sm font-mono">
+            <div className="hidden md:block text-white/70 text-sm font-mono">
               Garuda Linux
             </div>
 
-            {/* Window Buttons */}
+            {/* Mobile App Title - Show only on mobile when window is open */}
+            <div className="block md:hidden text-white text-sm font-medium truncate max-w-[200px]">
+              {openWindows.length > 0 ? openWindows[openWindows.length - 1].title : 'Portfolio OS'}
+            </div>
+
+            {/* Window Buttons - Only show on desktop */}
             {openWindows.length > 0 && (
-              <div className="flex items-center space-x-1 ml-4">
+              <div className="hidden md:flex items-center space-x-1 ml-4">
                 {openWindows.map((window) => (
                   <button
                     key={window.id}
@@ -89,7 +95,8 @@ const TaskBar = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={handleSystemPanelClick}
-              className="flex items-center space-x-1 text-white/80 hover:text-white hover:bg-white/10 px-2 py-1 rounded transition-colors"
+              className="flex items-center space-x-1 text-white/80 hover:text-white hover:bg-white/10 px-2 py-1 rounded transition-colors touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
             >
               <Wifi className="w-4 h-4" />
               <Battery className="w-4 h-4" />

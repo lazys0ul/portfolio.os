@@ -33,49 +33,49 @@ const LoadingScreen = () => {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 text-green-400 font-mono overflow-hidden flex flex-col">
+    <div className="w-full h-screen h-dvh bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 text-green-400 font-mono overflow-auto flex flex-col">
       {/* Professional Garuda Linux Header */}
-      <div className="flex items-center justify-center py-12">
-        <div className="flex items-center space-x-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-2xl">
-            <HardDrive className="w-8 h-8 text-white" />
+      <div className="flex items-center justify-center py-6 md:py-12 px-4">
+        <div className="flex items-center space-x-3 md:space-x-6">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-2xl">
+            <HardDrive className="w-6 h-6 md:w-8 md:h-8 text-white" />
           </div>
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-2">Garuda Linux</h1>
-            <p className="text-lg text-blue-300">Performance • Security • Innovation</p>
+            <h1 className="text-2xl md:text-4xl font-bold text-white mb-1 md:mb-2">Garuda Linux</h1>
+            <p className="text-sm md:text-lg text-blue-300">Performance • Security • Innovation</p>
           </div>
-          <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-2xl">
-            <Cpu className="w-8 h-8 text-white" />
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-2xl">
+            <Cpu className="w-6 h-6 md:w-8 md:h-8 text-white" />
           </div>
         </div>
       </div>
 
       {/* Terminal Output */}
-      <div className="flex-1 px-12 py-6">
-        <div className="bg-gray-900/80 rounded-xl p-8 h-full overflow-hidden border border-blue-500/20 shadow-2xl">
-          <div className="flex items-center mb-6">
-            <Terminal className="w-6 h-6 mr-3 text-blue-400" />
-            <span className="text-blue-400 font-semibold text-lg">System Boot Log</span>
+      <div className="flex-1 px-4 md:px-12 py-3 md:py-6 min-h-0">
+        <div className="bg-gray-900/80 rounded-xl p-4 md:p-8 h-full overflow-y-auto border border-blue-500/20 shadow-2xl">
+          <div className="flex items-center mb-4 md:mb-6">
+            <Terminal className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3 text-blue-400" />
+            <span className="text-blue-400 font-semibold text-sm md:text-lg">System Boot Log</span>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {terminalLines.map((line, index) => (
               <div 
                 key={index}
-                className="text-green-400 opacity-0 animate-fadeIn font-medium"
+                className="text-green-400 opacity-0 animate-fadeIn font-medium text-xs md:text-base"
                 style={{ 
                   animationDelay: `${index * 0.1}s`,
                   animationFillMode: 'forwards'
                 }}
               >
-                <span className="text-gray-500 mr-3 font-mono">[{String(index + 1).padStart(2, '0')}]</span>
+                <span className="text-gray-500 mr-2 md:mr-3 font-mono">[{String(index + 1).padStart(2, '0')}]</span>
                 {line}
               </div>
             ))}
             
             {/* Professional cursor */}
-            <div className="text-green-400 font-medium">
-              <span className="text-gray-500 mr-3 font-mono">[{String(terminalLines.length + 1).padStart(2, '0')}]</span>
+            <div className="text-green-400 font-medium text-xs md:text-base">
+              <span className="text-gray-500 mr-2 md:mr-3 font-mono">[{String(terminalLines.length + 1).padStart(2, '0')}]</span>
               <span className="animate-pulse">█</span>
             </div>
           </div>
@@ -83,24 +83,24 @@ const LoadingScreen = () => {
       </div>
 
       {/* Professional Progress Bar */}
-      <div className="px-12 pb-12">
-        <div className="bg-gray-800/60 rounded-full h-4 mb-6 shadow-inner">
+      <div className="px-4 md:px-12 pb-6 md:pb-12">
+        <div className="bg-gray-800/60 rounded-full h-3 md:h-4 mb-4 md:mb-6 shadow-inner">
           <div 
-            className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 h-4 rounded-full transition-all duration-300 ease-out relative overflow-hidden"
+            className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 h-3 md:h-4 rounded-full transition-all duration-300 ease-out relative overflow-hidden"
             style={{ width: `${currentProgress}%` }}
           >
             <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
           </div>
         </div>
         
-        <div className="flex justify-between text-lg text-gray-300">
+        <div className="flex justify-between text-sm md:text-lg text-gray-300">
           <span className="font-medium">Loading Pranav's Portfolio...</span>
           <span className="font-bold text-blue-300">{Math.round(currentProgress)}%</span>
         </div>
       </div>
 
-      {/* Professional spinning logo */}
-      <div className="absolute top-1/2 right-12 transform -translate-y-1/2 opacity-10">
+      {/* Professional spinning logo - hide on mobile */}
+      <div className="hidden md:block absolute top-1/2 right-12 transform -translate-y-1/2 opacity-10">
         <div className="w-32 h-32 border-4 border-blue-500/30 rounded-full animate-spin relative">
           <div className="absolute inset-2 border-4 border-transparent border-t-cyan-400 rounded-full animate-pulse"></div>
         </div>
