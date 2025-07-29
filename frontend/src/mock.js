@@ -157,7 +157,7 @@ export const wallpapers = [
   },
   {
     name: "Garuda Fire",
-    url: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?q=80&w=2135",
+    url: "https://wallpapercave.com/wp/wp15104062.webp",
     theme: "dark",
     accent: "#ff6b35",
     category: "garuda",
@@ -168,7 +168,8 @@ export const wallpapers = [
       surface: "#3e2016",
       text: "#ffffff", 
       textSecondary: "#ffb3a0"
-    }
+    },
+    isDefault: true // Set as default wallpaper
   },
 
   // Tokyo Ghoul Anime Wallpapers
@@ -185,8 +186,7 @@ export const wallpapers = [
       surface: "#1f1f1f",
       text: "#ffffff",
       textSecondary: "#fca5a5"
-    },
-    isDefault: true // Set as default wallpaper
+    }
   },
   {
     name: "Tokyo Ghoul 1",
