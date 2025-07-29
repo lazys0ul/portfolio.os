@@ -83,7 +83,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
   const DesktopIcon = ({ shortcut }) => (
     <button
       onClick={shortcut.action}
-      className="flex flex-col items-center space-y-1 group"
+      className="flex flex-col items-center space-y-1 group touch-manipulation"
       style={{ 
         position: 'absolute',
         ...shortcut.position
@@ -103,34 +103,91 @@ const DesktopIcons = ({ onOpenWindow }) => {
   );
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-20">
-      <div className="relative w-full h-full pointer-events-none">
-        {allShortcuts.map((shortcut, index) => (
-          <div key={index} className="pointer-events-auto">
-            <DesktopIcon shortcut={shortcut} />
+    <>
+      {/* Desktop Layout */}
+      <div className="hidden md:block absolute inset-0 pointer-events-none">
+        <div className="relative w-full h-full pointer-events-none">
+          {allShortcuts.map((shortcut, index) => (
+            <div key={index} className="pointer-events-auto">
+              <DesktopIcon shortcut={shortcut} />
+            </div>
+          ))}
+        </div>
+
+        {/* Floating Action Button for Quick Access */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-auto">
+          <button
+            onClick={() => onOpenWindow('About Me')}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 font-medium touch-manipulation"
+          >
+            <span>Welcome to my portfolio</span>
+            <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Desktop Watermark */}
+        <div className="absolute bottom-4 left-4 pointer-events-auto">
+          <div className="text-white/30 text-xs font-mono">
+            <div>@lazys0ul • Mathematics & Computing</div>
+            <div>Birla Institute of Technology, Mesra</div>
           </div>
-        ))}
-      </div>
-
-      {/* Floating Action Button for Quick Access */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-auto">
-        <button
-          onClick={() => onOpenWindow('About Me')}
-          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 font-medium"
-        >
-          <span>Welcome to my portfolio</span>
-          <ExternalLink className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Desktop Watermark */}
-      <div className="absolute bottom-4 left-4 pointer-events-auto">
-        <div className="text-white/30 text-xs font-mono">
-          <div>@lazys0ul • Mathematics & Computing</div>
-          <div>Birla Institute of Technology, Mesra</div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Layout - Fixed Issues */}
+      <div className="md:hidden p-4 pt-20 pb-24">
+        <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
+          {desktopApps.map((app, index) => {
+            const IconComponent = iconMap[app.icon];
+            
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 cursor-pointer hover:bg-white/10 active:bg-white/15 transition-all duration-200 touch-manipulation android-button"
+                onClick={() => onOpenWindow(app.name)}
+                style={{
+                  WebkitTapHighlightColor: 'rgba(255,255,255,0.1)',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
+                }}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  {IconComponent && <IconComponent className="w-6 h-6 text-white" />}
+                </div>
+                <span className="text-white text-xs font-medium text-center leading-tight">
+                  {app.name}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Fixed External Links - Now properly positioned */}
+      <div className="fixed bottom-4 right-4 flex space-x-3 z-40 md:hidden fixed-bottom">
+        <a
+          href="https://github.com/lazys0ul"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-gray-800/90 hover:bg-gray-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation android-button"
+          aria-label="GitHub Profile"
+          style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
+        >
+          <Github className="w-6 h-6 text-white" />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/pranav0997"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-blue-600/90 hover:bg-blue-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation android-button"
+          aria-label="LinkedIn Profile"
+          style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
+        >
+          <Linkedin className="w-6 h-6 text-white" />
+        </a>
+      </div>
+    </>
   );
 };
 
