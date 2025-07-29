@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Github, Linkedin, Mail, FileText, Download, User, Briefcase, Building, Code, Terminal, Folder, Settings, FileCode, Music } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, User, Briefcase, Building, Code, Mail, Terminal, Folder, Settings, FileCode, Music } from 'lucide-react';
 import { personalInfo, desktopApps } from '../mock';
 
 const DesktopIcons = ({ onOpenWindow }) => {
@@ -17,19 +17,8 @@ const DesktopIcons = ({ onOpenWindow }) => {
     Music: Music
   };
 
-  // Generate desktop shortcuts from desktopApps
-  const desktopShortcuts = desktopApps.map((app, index) => {
-    const IconComponent = iconMap[app.icon];
-    return {
-      name: app.name,
-      icon: IconComponent ? <IconComponent className="w-8 h-8" /> : '📁',
-      action: () => onOpenWindow(app.name),
-      position: getAppPosition(index, app.category)
-    };
-  });
-
-  // Function to calculate app positions based on category
-  function getAppPosition(index, category) {
+  // Function to calculate app positions based on category - MOVED UP
+  const getAppPosition = (index, category) => {
     const positions = {
       personal: [
         { top: '15%', right: '8%' }
@@ -60,7 +49,18 @@ const DesktopIcons = ({ onOpenWindow }) => {
     const categoryPositions = positions[category] || [{ top: '20%', left: '20%' }];
     const positionIndex = desktopApps.filter(app => app.category === category).findIndex(app => app.name === desktopApps[index].name);
     return categoryPositions[positionIndex] || categoryPositions[0];
-  }
+  };
+
+  // Generate desktop shortcuts from desktopApps
+  const desktopShortcuts = desktopApps.map((app, index) => {
+    const IconComponent = iconMap[app.icon];
+    return {
+      name: app.name,
+      icon: IconComponent ? <IconComponent className="w-8 h-8" /> : '📁',
+      action: () => onOpenWindow(app.name),
+      position: getAppPosition(index, app.category)
+    };
+  });
 
   // Add additional shortcuts (GitHub, LinkedIn)
   const additionalShortcuts = [
@@ -134,7 +134,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
         </div>
       </div>
 
-      {/* Mobile Layout - Fixed Issues */}
+      {/* Mobile Layout - FIXED */}
       <div className="md:hidden p-4 pt-20 pb-24">
         <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
           {desktopApps.map((app, index) => {
@@ -143,7 +143,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
             return (
               <div
                 key={index}
-                className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 cursor-pointer hover:bg-white/10 active:bg-white/15 transition-all duration-200 touch-manipulation android-button"
+                className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 cursor-pointer hover:bg-white/10 active:bg-white/15 transition-all duration-200 touch-manipulation"
                 onClick={() => onOpenWindow(app.name)}
                 style={{
                   WebkitTapHighlightColor: 'rgba(255,255,255,0.1)',
@@ -153,7 +153,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
                 }}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  {IconComponent && <IconComponent className="w-6 h-6 text-white" />}
+                  {IconComponent ? <IconComponent className="w-6 h-6 text-white" /> : <span className="text-2xl">📁</span>}
                 </div>
                 <span className="text-white text-xs font-medium text-center leading-tight">
                   {app.name}
@@ -164,13 +164,13 @@ const DesktopIcons = ({ onOpenWindow }) => {
         </div>
       </div>
 
-      {/* Fixed External Links - Now properly positioned */}
-      <div className="fixed bottom-4 right-4 flex space-x-3 z-40 md:hidden fixed-bottom">
+      {/* Mobile External Links - FIXED */}
+      <div className="fixed bottom-4 right-4 flex space-x-3 z-40 md:hidden">
         <a
           href="https://github.com/lazys0ul"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-gray-800/90 hover:bg-gray-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation android-button"
+          className="w-12 h-12 bg-gray-800/90 hover:bg-gray-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation"
           aria-label="GitHub Profile"
           style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
         >
@@ -180,7 +180,7 @@ const DesktopIcons = ({ onOpenWindow }) => {
           href="https://www.linkedin.com/in/pranav0997"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-blue-600/90 hover:bg-blue-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation android-button"
+          className="w-12 h-12 bg-blue-600/90 hover:bg-blue-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors shadow-lg touch-manipulation"
           aria-label="LinkedIn Profile"
           style={{ WebkitTapHighlightColor: 'rgba(255,255,255,0.1)' }}
         >
