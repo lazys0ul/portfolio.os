@@ -89,7 +89,9 @@ const TaskBar = ({
               desktop={
                 openWindows.length > 0 && (
                   <div className="flex items-center space-x-1 ml-4">
-                    {openWindows.map((window) => (
+                    {openWindows
+                      .sort((a, b) => b.zIndex - a.zIndex) // Sort by z-index to show top window first
+                      .map((window, index) => (
                       <button
                         key={window.id}
                         onClick={() => {
@@ -100,15 +102,27 @@ const TaskBar = ({
                           }
                         }}
                         className={`
-                          px-2 py-1 text-xs rounded transition-colors
+                          px-2 py-1 text-xs rounded transition-colors relative
                           ${window.isMinimized 
                             ? 'bg-white/10 text-white/70 hover:bg-white/20' 
-                            : 'bg-blue-500/70 text-white hover:bg-blue-500'
+                            : index === 0 
+                              ? 'bg-blue-500/70 text-white hover:bg-blue-500 ring-1 ring-blue-400' 
+                              : 'bg-white/20 text-white/90 hover:bg-white/30'
                           }
                         `}
-                        title={window.isMinimized ? `Restore ${window.title}` : window.title}
+                        title={
+                          window.isMinimized 
+                            ? `Restore ${window.title}` 
+                            : index === 0 
+                              ? `${window.title} (Active)` 
+                              : `${window.title} (Click to bring to front)`
+                        }
                       >
                         {window.title}
+                        {/* Visual indicator for stacked windows */}
+                        {!window.isMinimized && index > 0 && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-gray-800" />
+                        )}
                       </button>
                     ))}
                   </div>

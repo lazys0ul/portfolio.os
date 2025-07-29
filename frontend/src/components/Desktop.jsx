@@ -106,10 +106,10 @@ const DesktopContent = ({
         { ...existingWindow, zIndex: Math.max(...prev.map(w => w.zIndex)) + 1, isMinimized: false }
       ]);
     } else {
-      // Get adaptive window dimensions
-      const dimensions = adaptive.getWindowDimensions(appName.toLowerCase().replace(' ', '-'));
+      // Get adaptive window dimensions with stagger offset based on existing windows
+      const dimensions = adaptive.getWindowDimensions(appName.toLowerCase().replace(' ', '-'), openWindows);
       
-      // Open new window with adaptive sizing
+      // Open new window with adaptive sizing and staggered position
       const newWindow = {
         id: appName,
         title: appName,

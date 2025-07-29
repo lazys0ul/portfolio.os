@@ -220,8 +220,11 @@ const useAdaptiveLayout = () => {
     return 6; // Desktop
   }, [layoutConfig]);
 
-  const getWindowDimensions = useCallback((windowType = 'default') => {
+  const getWindowDimensions = useCallback((windowType = 'default', existingWindows = []) => {
     const { viewportSize, deviceType, windowManagementMode } = layoutConfig;
+    
+    // Calculate stagger offset for multiple windows
+    const staggerOffset = existingWindows.length * 30; // 30px offset per existing window
     
     if (windowManagementMode === 'overlay') {
       // Mobile: Full screen with taskbar space
@@ -232,23 +235,37 @@ const useAdaptiveLayout = () => {
         y: 40
       };
     } else if (windowManagementMode === 'simplified') {
-      // Tablet: Larger windows with some chrome
+      // Tablet: Larger windows with some chrome, with stagger
+      const baseX = 20 + staggerOffset;
+      const baseY = 60 + staggerOffset;
+      
       return {
         width: Math.min(viewportSize.width - 40, 800),
         height: Math.min(viewportSize.height - 80, 600),
-        x: 20,
-        y: 60
+        x: Math.min(baseX, viewportSize.width - 800 - 20), // Don't go off screen
+        y: Math.min(baseY, viewportSize.height - 600 - 40)
       };
     } else {
-      // Desktop: Traditional windowing
+      // Desktop: Traditional windowing with stagger
       const baseWidth = windowType === 'settings' ? 900 : 700;
       const baseHeight = windowType === 'settings' ? 600 : 500;
+      
+      const centerX = Math.max(50, (viewportSize.width - baseWidth) / 2);
+      const centerY = Math.max(50, (viewportSize.height - baseHeight) / 2);
+      
+      // Add stagger offset but keep within bounds
+      const staggeredX = centerX + staggerOffset;
+      const staggeredY = centerY + staggerOffset;
+      
+      // Ensure window stays within viewport
+      const maxX = viewportSize.width - baseWidth - 50;
+      const maxY = viewportSize.height - baseHeight - 50;
       
       return {
         width: Math.min(baseWidth, viewportSize.width - 100),
         height: Math.min(baseHeight, viewportSize.height - 100),
-        x: Math.max(50, (viewportSize.width - baseWidth) / 2),
-        y: Math.max(50, (viewportSize.height - baseHeight) / 2)
+        x: Math.min(staggeredX, maxX),
+        y: Math.min(staggeredY, maxY)
       };
     }
   }, [layoutConfig]);
