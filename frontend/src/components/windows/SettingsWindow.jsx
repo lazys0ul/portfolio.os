@@ -342,7 +342,7 @@ const SettingsWindow = React.memo(({ currentWallpaper, onChangeWallpaper }) => {
             </div>
             <div className="p-3 bg-white/5 rounded-lg">
               <span className="text-gray-400">IP Address:</span>
-              <div className="text-white">192.168.1.42</div>
+              <div className="text-white">10.47.83.156</div>
             </div>
             <div className="p-3 bg-white/5 rounded-lg">
               <span className="text-gray-400">Download:</span>
